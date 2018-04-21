@@ -61,7 +61,6 @@ public class GoogleSigninActivity extends BaseActivity implements View.OnClickLi
         setContentView(R.layout.activity_google);
         ButterKnife.bind(this);
 
-
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -189,14 +188,13 @@ public class GoogleSigninActivity extends BaseActivity implements View.OnClickLi
     public void onClick(View v) {
         int i = v.getId();
         if (i == R.id.sign_in_button) {
-            Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
             signIn();
         } else if (i == R.id.sign_out_button) {
             signOut();
         }
-//        else if (i == R.id.disconnect_button) {
-//            revokeAccess();
-//        }
+        else if (i == R.id.disconnect_button) {
+            revokeAccess();
+        }
     }
 
 

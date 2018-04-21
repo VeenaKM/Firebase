@@ -12,23 +12,23 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import firebase.com.firebaseproject.database_activity.FirebaseDataBaseActivity;
+
 public class ChooserActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private static final Class[] CLASSES = new Class[]{
             GoogleSigninActivity.class,
             EmailAndPasswordActivity.class,
+            FacebookLoginActivity.class,
+            FirebaseDataBaseActivity.class
     };
 
     private static final int[] DESCRIPTION_IDS = new int[] {
             R.string.desc_google_sign_in,
-            R.string.desc_facebook_login,
-            R.string.desc_twitter_login,
             R.string.desc_emailpassword,
-            R.string.desc_passwordless,
-            R.string.desc_phone_auth,
-            R.string.desc_anonymous_auth,
-            R.string.desc_firebase_ui,
-            R.string.desc_custom_auth,
+            R.string.desc_facebook_login,
+            R.string.realtime_db
+
     };
 
     @Override

@@ -84,4 +84,11 @@
 
     <string name="id_fmt">User ID: %s</string>
     <string name="email_fmt">Email: %s</string>
+
+    <string name="facebook_app_id">1068581576613420</string>
+    <string name="fb_login_protocol_scheme">77236837b8ecfa59cddf87b091f01338</string>
+    <string name="realtime_db">Realtime Database</string>
+    <string name="enter_username">Enter username</string>
+    <string name="enter_email_id">Enter email id</string>
+    <string name="write_to_db">Write To Db</string>
 </resources>
