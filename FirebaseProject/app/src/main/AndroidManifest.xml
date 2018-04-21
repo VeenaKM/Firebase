@@ -33,6 +33,7 @@
             android:theme="@android:style/Theme.Translucent.NoTitleBar"
             tools:replace="android:theme" />
         <activity android:name=".database_activity.FirebaseDataBaseActivity" />
+        <activity android:name=".database_activity.FirebaseChatActivity" />
     </application>
 
 </manifest>

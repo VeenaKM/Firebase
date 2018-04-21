@@ -91,4 +91,5 @@
     <string name="enter_username">Enter username</string>
     <string name="enter_email_id">Enter email id</string>
     <string name="write_to_db">Write To Db</string>
+    <string name="firebase_chat">Firebase Chat App</string>
 </resources>

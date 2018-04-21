@@ -36,8 +36,11 @@ dependencies {
     // Google Sign In SDK (only required for Google Sign In)
     implementation 'com.google.android.gms:play-services-auth:15.0.0'
 
+    // Firebase facebook
     implementation 'com.facebook.android:facebook-login:4.32.0'
 
+    // firebase chat
+    implementation 'com.firebaseui:firebase-ui:0.6.0'
 
 }
 
