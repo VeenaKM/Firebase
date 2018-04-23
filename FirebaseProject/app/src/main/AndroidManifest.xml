@@ -34,10 +34,10 @@
             <!--tools:replace="android:theme" />-->
         <activity android:name=".database_activity.FirebaseDataBaseActivity" />
         <activity android:name=".database_activity.FirebaseChatActivity" />
-        <!--<activity android:name=".chat_app.FirebaseChatAppActivity" />-->
-        <!--<activity android:name=".chat_app.LoginActivity" />-->
-        <!--<activity android:name=".chat_app.RegisterActivity" />-->
-        <!--<activity android:name=".chat_app.UsersActivity" />-->
+        <activity android:name=".chat_app.FirebaseChatAppActivity" />
+        <activity android:name=".chat_app.LoginActivity" />
+        <activity android:name=".chat_app.RegisterActivity" />
+        <activity android:name=".chat_app.UsersActivity" />
     </application>
 
 </manifest>
