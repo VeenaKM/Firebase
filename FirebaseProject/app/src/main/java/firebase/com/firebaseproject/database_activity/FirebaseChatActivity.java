@@ -5,25 +5,29 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.client.Firebase;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserInfo;
 import com.google.firebase.database.FirebaseDatabase;
 
 import firebase.com.firebaseproject.BaseActivity;
 import firebase.com.firebaseproject.R;
 import firebase.com.firebaseproject.dataModel.ChatMessage;
 
-public class FirebaseChatActivity extends BaseActivity implements View.OnClickListener {
+public class FirebaseChatActivity extends BaseActivity  {
 
     private static final String TAG = "FirebaseChat";
-    private static final int SIGN_IN_REQUEST_CODE = 101 ;
+    private static final int SIGN_IN_REQUEST_CODE = 10 ;
 
     ListView listOfMessages;
     FloatingActionButton fab;
@@ -66,10 +70,6 @@ public class FirebaseChatActivity extends BaseActivity implements View.OnClickLi
 
     }
 
-    private void setDataAdapter() {
-
-    }
-
     private void iniListener() {
         fab.setOnClickListener(new View.OnClickListener() {
         @Override
@@ -78,6 +78,8 @@ public class FirebaseChatActivity extends BaseActivity implements View.OnClickLi
 
             // Read the input field and push a new instance
             // of ChatMessage to the Firebase database
+
+
             FirebaseDatabase.getInstance()
                     .getReference()
                     .push()
@@ -109,6 +111,8 @@ public class FirebaseChatActivity extends BaseActivity implements View.OnClickLi
                 // Set their text
                 messageText.setText(model.getMessageText());
                 messageUser.setText(model.getMessageUser());
+
+                Log.d(TAG,"username = "+model.getMessageUser());
 
                 // Format the date before showing it
                 messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)",
@@ -144,9 +148,4 @@ public class FirebaseChatActivity extends BaseActivity implements View.OnClickLi
 
     }
 
-
-    @Override
-    public void onClick(View v) {
-
-    }
 }
