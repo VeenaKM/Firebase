@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -34,7 +35,7 @@ public class ChatMessagesActivity extends AppCompatActivity {
     private LinearLayoutManager mLayoutManager;
     private EditText mMessageEditText;
     private ImageButton mSendImageButton;
-    private DatabaseReference mMessagesDBRef;
+    private DatabaseReference mMessagesDBRefSender,mMessagesDBRefReciver;
     private DatabaseReference mUsersRef;
     private List<ChatMessage> mMessagesList = new ArrayList<>();
     private MessagesAdapter adapter = null;
@@ -58,12 +59,14 @@ public class ChatMessagesActivity extends AppCompatActivity {
         mLayoutManager.setStackFromEnd(true);
         mChatsRecyclerView.setLayoutManager(mLayoutManager);
 
-        //init Firebase
-        mMessagesDBRef = FirebaseDatabase.getInstance().getReference().child("Messages");
-        mUsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-
         //get receiverId from intent
         mReceiverId = getIntent().getStringExtra("USER_ID");
+
+        //init Firebase
+        mMessagesDBRefSender = FirebaseDatabase.getInstance().getReference().child("Messages").child(FirebaseAuth.getInstance().getUid()+"_"+mReceiverId);
+        mMessagesDBRefReciver = FirebaseDatabase.getInstance().getReference().child("Messages").child(mReceiverId+"_"+FirebaseAuth.getInstance().getUid());
+        mUsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+
 
         /**listen to send message imagebutton click**/
         mSendImageButton.setOnClickListener(new View.OnClickListener() {
@@ -104,7 +107,8 @@ public class ChatMessagesActivity extends AppCompatActivity {
         mMessagesList.clear();
 
         ChatMessage newMsg = new ChatMessage(message, senderId, receiverId);
-        mMessagesDBRef.push().setValue(newMsg).addOnCompleteListener(new OnCompleteListener<Void>() {
+//        mMessagesDBRef.child(senderId+"_"+receiverId).push().setValue(newMsg).addOnCompleteListener(new OnCompleteListener<Void>() {
+        mMessagesDBRefSender.push().setValue(newMsg).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(!task.isSuccessful()){
@@ -112,13 +116,25 @@ public class ChatMessagesActivity extends AppCompatActivity {
                     Toast.makeText(ChatMessagesActivity.this, "Error " + task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(ChatMessagesActivity.this, "Message sent successfully!", Toast.LENGTH_SHORT).show();
-                    mMessageEditText.setText(null);
+                    mMessageEditText.setText("");
                     hideSoftKeyboard();
                 }
             }
         });
-
-
+//        ChatMessage receiverNewMsg = new ChatMessage(message, senderId, receiverId);
+//        mMessagesDBRef.child(senderId+"_"+receiverId).push().setValue(newMsg).addOnCompleteListener(new OnCompleteListener<Void>() {
+        mMessagesDBRefReciver.push().setValue(newMsg).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+//                if(!task.isSuccessful()){
+//                    //error
+//                    Toast.makeText(ChatMessagesActivity.this, "Error " + task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+//                }else{
+//                    Toast.makeText(ChatMessagesActivity.this, "Message sent successfully!", Toast.LENGTH_SHORT).show();
+//
+//                }
+            }
+        });
     }
 
     public void hideSoftKeyboard() {
@@ -129,22 +145,24 @@ public class ChatMessagesActivity extends AppCompatActivity {
     }
 
     private void querymessagesBetweenThisUserAndClickedUser(){
+        Log.e("receiver_id=","="+mReceiverId);
+        Log.e("sender_id=","="+FirebaseAuth.getInstance().getUid());
 
-        mMessagesDBRef.addValueEventListener(new ValueEventListener() {
+        mMessagesDBRefSender.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 mMessagesList.clear();
+                if(dataSnapshot!=null && dataSnapshot.getValue()!=null) {
+                    Log.e("MesagesAvailable", "=" + dataSnapshot.getValue().toString());
 
-                for(DataSnapshot snap: dataSnapshot.getChildren()){
-                    ChatMessage chatMessage = snap.getValue(ChatMessage.class);
-                    if(chatMessage.getSenderId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) && chatMessage.getReceiverId().equals(mReceiverId) || chatMessage.getSenderId().equals(mReceiverId) && chatMessage.getReceiverId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())){
+                    for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                        ChatMessage chatMessage = snap.getValue(ChatMessage.class);
                         mMessagesList.add(chatMessage);
                     }
 
+                    /**populate messages**/
+                    populateMessagesRecyclerView();
                 }
-
-                /**populate messages**/
-                populateMessagesRecyclerView();
 
             }
 

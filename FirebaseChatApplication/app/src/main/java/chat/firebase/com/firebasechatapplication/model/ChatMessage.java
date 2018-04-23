@@ -9,6 +9,8 @@ public class ChatMessage {
     private String senderId;
     private String receiverId;
 
+    private String chatRoom;
+
     public ChatMessage() {
     }
 
@@ -16,6 +18,14 @@ public class ChatMessage {
         this.message = message;
         this.senderId = senderId;
         this.receiverId = receiverId;
+    }
+
+    public String getChatRoom() {
+        return chatRoom;
+    }
+
+    public void setChatRoom(String chatRoom) {
+        this.chatRoom = chatRoom;
     }
 
     public String getMessage() {
