@@ -9,17 +9,27 @@ public class ChatMessage {
     private String senderId;
     private String receiverId;
     private FileModel file;
+    private String messageId;
 
-    private String chatRoom;
 
     public ChatMessage() {
     }
+
 
     public ChatMessage(String message, String senderId, String receiverId,FileModel file) {
         this.message = message;
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.file = file;
+    }
+
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
     }
 
     public FileModel getFile() {
@@ -30,13 +40,6 @@ public class ChatMessage {
         this.file = file;
     }
 
-    public String getChatRoom() {
-        return chatRoom;
-    }
-
-    public void setChatRoom(String chatRoom) {
-        this.chatRoom = chatRoom;
-    }
 
     public String getMessage() {
         return message;

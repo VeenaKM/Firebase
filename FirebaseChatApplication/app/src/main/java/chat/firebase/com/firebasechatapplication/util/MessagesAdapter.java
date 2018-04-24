@@ -6,13 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import chat.firebase.com.firebasechatapplication.ChatMessagesActivity;
 import chat.firebase.com.firebasechatapplication.R;
 import chat.firebase.com.firebasechatapplication.UpdateProfileActivity;
 import chat.firebase.com.firebasechatapplication.model.ChatMessage;
@@ -33,6 +36,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         // each data item is just a string in this case
         public TextView messageTextView;
         ImageView imageView;
+        LinearLayout msgLayout;
 
         public View layout;
 
@@ -41,9 +45,17 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             layout = v;
             messageTextView = (TextView) v.findViewById(R.id.chatMsgTextView);
             imageView = (ImageView) v.findViewById(R.id.image);
+            msgLayout = (LinearLayout) v.findViewById(R.id.layout);
 
 
-
+            v.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Toast.makeText(mContext,"Removed "+getAdapterPosition(),Toast.LENGTH_SHORT).show();
+                    ((ChatMessagesActivity)mContext).removeSenderMessage(getAdapterPosition());
+                    return true;
+                }
+            });
         }
     }
 
@@ -51,6 +63,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         // each data item is just a string in this case
         public TextView messageTextView;
         ImageView imageView;
+        LinearLayout msgLayout;
 
         public View layout;
 
@@ -59,6 +72,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             layout = v;
             messageTextView = (TextView) v.findViewById(R.id.chatMsgTextView);
             imageView = (ImageView) v.findViewById(R.id.image);
+            msgLayout = (LinearLayout) v.findViewById(R.id.layout);
 
         }
     }
@@ -114,16 +128,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
         if (msg.getFile()!=null) {
             holder.imageView.setVisibility(View.VISIBLE);
-            holder.messageTextView.setVisibility(View.GONE);
+            holder.msgLayout.setVisibility(View.GONE);
             FileModel fileModel = msg.getFile();
             if (fileModel.getUrl_file() != null)
                 Picasso.with(mContext).load(fileModel.getUrl_file()).placeholder(R.mipmap.ic_launcher).into(holder.imageView);
         }else {
             holder.imageView.setVisibility(View.GONE);
-            holder.messageTextView.setVisibility(View.VISIBLE);
+            holder.msgLayout.setVisibility(View.VISIBLE);
             holder.messageTextView.setText(msg.getMessage());
 
         }
+
+
 
 
 

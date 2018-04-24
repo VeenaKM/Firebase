@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -224,6 +225,10 @@ public class ChatMessagesActivity extends AppCompatActivity {
 
                     for (DataSnapshot snap : dataSnapshot.getChildren()) {
                         ChatMessage chatMessage = snap.getValue(ChatMessage.class);
+                        Log.d("User key", snap.getKey());
+                        Log.d("User ref", snap.getRef().toString());
+                        Log.d("User val", snap.getValue().toString());
+                        chatMessage.setMessageId(snap.getKey());
                         mMessagesList.add(chatMessage);
                     }
 
@@ -238,6 +243,54 @@ public class ChatMessagesActivity extends AppCompatActivity {
 
             }
         });
+
+
+    }
+
+    public void removeSenderMessage(final int pos)
+    {
+        // this just focuses on the message section of my database
+        DatabaseReference databaseReference_messages = FirebaseDatabase.getInstance().getReference().child("Messages").child(FirebaseAuth.getInstance().getUid()+"_"+mReceiverId);
+
+        databaseReference_messages.child(mMessagesList.get(pos).getMessageId()).setValue(null);
+
+        databaseReference_messages.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                ChatMessage myChatsInfoModel = dataSnapshot.getValue(ChatMessage.class);
+
+                if (myChatsInfoModel != null) {
+
+                    int pos = mMessagesList.indexOf(myChatsInfoModel);
+
+                    if (pos != -1) {
+                        adapter.remove(pos);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     private void populateMessagesRecyclerView(){
