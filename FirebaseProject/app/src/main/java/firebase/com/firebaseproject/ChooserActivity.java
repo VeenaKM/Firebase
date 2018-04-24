@@ -12,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import firebase.com.firebaseproject.chat_app.FirebaseChatAppActivity;
 import firebase.com.firebaseproject.database_activity.FirebaseChatActivity;
 import firebase.com.firebaseproject.database_activity.FirebaseDataBaseActivity;
 
@@ -23,7 +22,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
             EmailAndPasswordActivity.class,
             FacebookLoginActivity.class,
             FirebaseDataBaseActivity.class,
-            FirebaseChatAppActivity.class
+            FirebaseChatActivity.class
     };
 
     private static final int[] DESCRIPTION_IDS = new int[] {

@@ -22,5 +22,10 @@
             android:textColor="@android:color/holo_red_dark" />
 
     </LinearLayout>
-
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:visibility="gone"
+        android:layout_alignParentLeft="true"
+        android:id="@+id/image"/>
 </RelativeLayout>

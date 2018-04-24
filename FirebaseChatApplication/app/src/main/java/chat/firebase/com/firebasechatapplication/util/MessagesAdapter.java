@@ -5,14 +5,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 import chat.firebase.com.firebasechatapplication.R;
+import chat.firebase.com.firebasechatapplication.UpdateProfileActivity;
 import chat.firebase.com.firebasechatapplication.model.ChatMessage;
+import chat.firebase.com.firebasechatapplication.model.FileModel;
 
 
 public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder> {
@@ -28,6 +32,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public TextView messageTextView;
+        ImageView imageView;
 
         public View layout;
 
@@ -35,6 +40,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             super(v);
             layout = v;
             messageTextView = (TextView) v.findViewById(R.id.chatMsgTextView);
+            imageView = (ImageView) v.findViewById(R.id.image);
+
+
 
         }
     }
@@ -42,6 +50,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public class ViewHolder2 extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public TextView messageTextView;
+        ImageView imageView;
 
         public View layout;
 
@@ -49,6 +58,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
             super(v);
             layout = v;
             messageTextView = (TextView) v.findViewById(R.id.chatMsgTextView);
+            imageView = (ImageView) v.findViewById(R.id.image);
 
         }
     }
@@ -101,7 +111,20 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         ChatMessage msg = mMessagesList.get(position);
-        holder.messageTextView.setText(msg.getMessage());
+
+        if (msg.getFile()!=null) {
+            holder.imageView.setVisibility(View.VISIBLE);
+            holder.messageTextView.setVisibility(View.GONE);
+            FileModel fileModel = msg.getFile();
+            if (fileModel.getUrl_file() != null)
+                Picasso.with(mContext).load(fileModel.getUrl_file()).placeholder(R.mipmap.ic_launcher).into(holder.imageView);
+        }else {
+            holder.imageView.setVisibility(View.GONE);
+            holder.messageTextView.setVisibility(View.VISIBLE);
+            holder.messageTextView.setText(msg.getMessage());
+
+        }
+
 
 
     }
