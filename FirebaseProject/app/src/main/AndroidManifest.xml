@@ -38,6 +38,7 @@
         <activity android:name=".chat_app.LoginActivity" />
         <activity android:name=".chat_app.RegisterActivity" />
         <activity android:name=".chat_app.UsersActivity" />
+        <activity android:name=".database_activity.FirebaseLiveDataActivity" />
     </application>
 
 </manifest>
