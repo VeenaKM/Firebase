@@ -14,6 +14,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import chat.firebase.com.firebasechatapplication.ChatMessagesActivity;
+import chat.firebase.com.firebasechatapplication.MessageActivity;
 import chat.firebase.com.firebasechatapplication.R;
 import chat.firebase.com.firebasechatapplication.model.User;
 
@@ -108,7 +109,7 @@ public class UsersAdapter extends RecyclerView.Adapter<UsersAdapter.ViewHolder> 
     }
 
     private void goToUpdateActivity(String personId){
-        Intent goToUpdate = new Intent(mContext, ChatMessagesActivity.class);
+        Intent goToUpdate = new Intent(mContext, MessageActivity.class);
         goToUpdate.putExtra("USER_ID", personId);
         mContext.startActivity(goToUpdate);
     }

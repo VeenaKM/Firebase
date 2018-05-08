@@ -13,7 +13,13 @@ public class User {
 
     public User() {
     }
+    public String name;
 
+
+    public User(String username, String email) {
+        this.name = username;
+        this.email = email;
+    }
     public User(String userId, String displayName, String email) {
         this.userId = userId;
         this.displayName = displayName;

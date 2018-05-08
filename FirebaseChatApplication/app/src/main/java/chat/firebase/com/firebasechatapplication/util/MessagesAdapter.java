@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import chat.firebase.com.firebasechatapplication.ChatMessagesActivity;
@@ -26,8 +27,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
     public static final int ITEM_TYPE_SENT = 0;
     public static final int ITEM_TYPE_RECEIVED = 1;
 
-    private List<ChatMessage> mMessagesList;
+    private List<ChatMessage> mMessagesList=new ArrayList<>();
     private Context mContext;
+
+
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -95,6 +98,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     }
 
+//    public MessagesAdapter(Context mContext) {
+//        this.mContext = mContext;
+//    }
+
     @Override
     public int getItemViewType(int position) {
         if (mMessagesList.get(position).getSenderId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
@@ -126,31 +133,42 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
         // - replace the contents of the view with that element
         ChatMessage msg = mMessagesList.get(position);
 
-        if (msg.getFile()!=null) {
-            holder.imageView.setVisibility(View.VISIBLE);
-            holder.msgLayout.setVisibility(View.GONE);
-            FileModel fileModel = msg.getFile();
-            if (fileModel.getUrl_file() != null)
-                Picasso.with(mContext).load(fileModel.getUrl_file()).placeholder(R.mipmap.ic_launcher).into(holder.imageView);
-        }else {
-            holder.imageView.setVisibility(View.GONE);
+//        if (msg.getFile()!=null) {
+//            holder.imageView.setVisibility(View.VISIBLE);
+//            holder.msgLayout.setVisibility(View.GONE);
+//            FileModel fileModel = msg.getFile();
+//            if (fileModel.getUrl_file() != null)
+//                Picasso.with(mContext).load(fileModel.getUrl_file()).placeholder(R.mipmap.ic_launcher).into(holder.imageView);
+//        }else {
+//            holder.imageView.setVisibility(View.GONE);
             holder.msgLayout.setVisibility(View.VISIBLE);
             holder.messageTextView.setText(msg.getMessage());
 
-        }
+//        }
 
 
 
 
 
     }
+    public void addAll(List<ChatMessage> newMessages) {
 
+        mMessagesList.addAll(newMessages);
+        int initialSize = mMessagesList.size()-1;
+        notifyItemInserted(initialSize);
+//        notifyItemRangeInserted(initialSize, newMessages.size());
+    }
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return mMessagesList.size();
     }
 
-
+    public String getLastItemId() {
+        return mMessagesList.get(mMessagesList.size() - 1).getMessageId();
+    }
+    public String getFirstItemId() {
+        return mMessagesList.get(0).getMessageId();
+    }
 
 }

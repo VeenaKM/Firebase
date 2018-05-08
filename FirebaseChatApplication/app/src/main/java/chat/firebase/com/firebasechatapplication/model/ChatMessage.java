@@ -11,18 +11,29 @@ public class ChatMessage {
     private FileModel file;
     private String messageId;
 
+    long timeStamp;
+
+
 
     public ChatMessage() {
     }
 
 
-    public ChatMessage(String message, String senderId, String receiverId,FileModel file) {
+    public ChatMessage(String message, String senderId, String receiverId,FileModel file,long timeStamp) {
         this.message = message;
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.file = file;
+        this.timeStamp = timeStamp;
     }
 
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 
     public String getMessageId() {
         return messageId;
@@ -64,4 +75,6 @@ public class ChatMessage {
     public void setReceiverId(String receiverId) {
         this.receiverId = receiverId;
     }
+
+
 }

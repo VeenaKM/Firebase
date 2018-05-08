@@ -3,7 +3,6 @@ package chat.firebase.com.firebasechatapplication;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,7 +20,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,19 +32,17 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Logger;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import chat.firebase.com.firebasechatapplication.model.ChatMessage;
 import chat.firebase.com.firebasechatapplication.model.FileModel;
@@ -87,11 +83,20 @@ public class ChatMessagesActivity extends AppCompatActivity {
     private String mReceiverId;
     private String mReceiverName;
 
+    private int currentPage = 0;
+    private String messageID=null;
+    private boolean mIsLoading = false;
+    private int TOTAL_ITEM_EACH_LOAD = 3;
+    private String inverseTimestamp="";
+    int messageCount=0;
+    private int mTotalItemCount = 0;
+    private int mFirstVisibleItemPosition;
+    private long lastKey;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_messages);
-
 
         //initialize the views
         mChatsRecyclerView = (RecyclerView)findViewById(R.id.messagesRecyclerView);
@@ -141,50 +146,34 @@ public class ChatMessagesActivity extends AppCompatActivity {
 
             }
         });
+        /**populate messages**/
+        populateMessagesRecyclerView();
+        mTotalItemCount = 100;
+        mChatsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
-
-
-    }
-
-    private void selectImage() {
-        Log.d(TAG,"clicked");
-        AlertDialog.Builder builder = new AlertDialog.Builder(ChatMessagesActivity.this);
-        builder.setTitle("Send photo");
-        builder.setMessage("Choose a method to change photo");
-        builder.setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                photoGalleryIntent();
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+//                mTotalItemCount = mLayoutManager.getItemCount();
+                mFirstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+                Log.d("TAG","*** "+ mTotalItemCount +"<="+ "("+mFirstVisibleItemPosition +"+"+ TOTAL_ITEM_EACH_LOAD+")");
+                if (!mIsLoading && mTotalItemCount <= (mFirstVisibleItemPosition + TOTAL_ITEM_EACH_LOAD)) {
+                    loadMoreData(adapter.getLastItemId());
+                    Log.d("TAG","*** load data ***");
+                    mIsLoading = true;
+                }else{
+                    Log.d("TAG","*** Scrolling ***");
+                }
             }
         });
-        builder.setNegativeButton("Camera", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                photoCameraIntent();
-            }
-        });
-        builder.create().show();
+        loadData(null);
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        /**Query and populate chat messages**/
-        querymessagesBetweenThisUserAndClickedUser();
-
-
-        /**sets title bar with recepient name**/
-        queryRecipientName(mReceiverId);
-    }
-
-
 
     private void sendMessageToFirebase(String message, String senderId, String receiverId){
-        mMessagesList.clear();
+        ChatMessage newMsg = new ChatMessage(message, senderId, receiverId,null,getTimeStamp());
 
-        ChatMessage newMsg = new ChatMessage(message, senderId, receiverId,null);
-//        mMessagesDBRef.child(senderId+"_"+receiverId).push().setValue(newMsg).addOnCompleteListener(new OnCompleteListener<Void>() {
-        mMessagesDBRefSender.push().setValue(newMsg).addOnCompleteListener(new OnCompleteListener<Void>() {
+         mMessagesDBRefSender.push().setValue(newMsg).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if(!task.isSuccessful()){
@@ -204,49 +193,114 @@ public class ChatMessagesActivity extends AppCompatActivity {
             }
         });
     }
+    private void populateMessagesRecyclerView(){
+        adapter = new MessagesAdapter(mMessagesList, this);
+//        adapter = new MessagesAdapter(this);
+        mChatsRecyclerView.setAdapter(adapter);
 
-    public void hideSoftKeyboard() {
-        if(getCurrentFocus()!=null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
     }
 
-    private void querymessagesBetweenThisUserAndClickedUser(){
-        Log.e("receiver_id=","="+mReceiverId);
-        Log.e("sender_id=","="+FirebaseAuth.getInstance().getUid());
+private void loadMoreData(String lastItemId){
+    //messageCount: is the total comments stored in firebase database
 
-        mMessagesDBRefSender.addValueEventListener(new ValueEventListener() {
+    if ((currentPage * TOTAL_ITEM_EACH_LOAD) <= messageCount) {
+        Log.e("current page=",""+currentPage);
+        Log.e("messageCount=",""+messageCount);
+        currentPage++;
+
+        loadData(lastItemId);
+    }
+}
+    private void loadData(String lastItemId) {
+        Query query;
+        Log.d("lastItemId", "id ="+lastItemId);
+
+        if (lastItemId == null)
+            query = mMessagesDBRefSender
+                    .orderByKey()
+                    .limitToLast(TOTAL_ITEM_EACH_LOAD);
+        else
+            query = mMessagesDBRefSender
+                    .orderByKey()
+                    .endAt(lastItemId)
+                    .limitToLast(TOTAL_ITEM_EACH_LOAD);
+
+        query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                mMessagesList.clear();
-                if(dataSnapshot!=null && dataSnapshot.getValue()!=null) {
-                    Log.e("MesagesAvailable", "=" + dataSnapshot.getValue().toString());
+                Log.e("MesagesAvailable", "=" + "Listener called");
 
-                    for (DataSnapshot snap : dataSnapshot.getChildren()) {
-                        ChatMessage chatMessage = snap.getValue(ChatMessage.class);
-                        Log.d("User key", snap.getKey());
-                        Log.d("User ref", snap.getRef().toString());
-                        Log.d("User val", snap.getValue().toString());
-                        chatMessage.setMessageId(snap.getKey());
-                        mMessagesList.add(chatMessage);
-                    }
+                if (!mMessagesList.isEmpty()) {
+                    mMessagesList.clear(); //The list for update recycle view
 
-                    /**populate messages**/
-                    populateMessagesRecyclerView();
                 }
+                if(!dataSnapshot.hasChildren()) {
+                    currentPage--;
+                }
+                int counter = 0;
 
+                if(dataSnapshot!=null && dataSnapshot.getValue()!=null) {
+                    for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                        ++counter;
+                        ChatMessage chatMessage = snap.getValue(ChatMessage.class);
+
+                        chatMessage.setMessageId(snap.getKey());
+                        messageID=snap.getKey();
+                        lastKey = chatMessage.getTimeStamp();
+
+                        mMessagesList.add(chatMessage);
+                        adapter.notifyDataSetChanged();
+                        mIsLoading = false;
+                    }
+                }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-
+                mIsLoading = false;
             }
         });
 
-
+//        query.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+////                if (!mMessagesList.isEmpty()) {
+////                    mMessagesList.clear(); //The list for update recycle view
+//////
+////                }
+//                if(dataSnapshot!=null) {
+//                    ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
+//                    mMessagesList.add(chatMessage);
+//                    adapter.notifyDataSetChanged();
+////                    mChatsRecyclerView.scrollToPosition(mMessagesList.size()-1);
+//                    mIsLoading=false;
+//                }
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//
+//
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                mIsLoading=false;
+//
+//            }
+//        });
     }
-
     public void removeSenderMessage(final int pos)
     {
         // this just focuses on the message section of my database
@@ -293,11 +347,7 @@ public class ChatMessagesActivity extends AppCompatActivity {
 
     }
 
-    private void populateMessagesRecyclerView(){
-        adapter = new MessagesAdapter(mMessagesList, this);
-        mChatsRecyclerView.setAdapter(adapter);
 
-    }
 
     private void queryRecipientName(final String receiverId){
 
@@ -365,7 +415,7 @@ public class ChatMessagesActivity extends AppCompatActivity {
                     Log.i(TAG,"onSuccess sendFileFirebase");
                     Uri downloadUrl = taskSnapshot.getDownloadUrl();
                     FileModel fileModel = new FileModel("img",downloadUrl.toString(),name,"");
-                    ChatMessage chatModel = new ChatMessage("",FirebaseAuth.getInstance().getUid(),mReceiverId,fileModel);
+                    ChatMessage chatModel = new ChatMessage("",FirebaseAuth.getInstance().getUid(),mReceiverId,fileModel,getTimeStamp());
                     mMessagesDBRefSender.push().setValue(chatModel);
                     mMessagesDBRefReciver.push().setValue(chatModel);
                 }
@@ -433,6 +483,84 @@ public class ChatMessagesActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+    private void selectImage() {
+        Log.d(TAG,"clicked");
+        AlertDialog.Builder builder = new AlertDialog.Builder(ChatMessagesActivity.this);
+        builder.setTitle("Send photo");
+        builder.setMessage("Choose a method to change photo");
+        builder.setPositiveButton("Gallery", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                photoGalleryIntent();
+            }
+        });
+        builder.setNegativeButton("Camera", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                photoCameraIntent();
+            }
+        });
+        builder.create().show();
+    }
+    public void hideSoftKeyboard() {
+        if(getCurrentFocus()!=null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+        private void querymessagesBetweenThisUserAndClickedUser(){
+        Log.e("receiver_id=","="+mReceiverId);
+        Log.e("sender_id=","="+FirebaseAuth.getInstance().getUid());
+
+        mMessagesDBRefSender.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+//                mMessagesList.clear();
+                if(dataSnapshot!=null && dataSnapshot.getValue()!=null) {
+                    Log.e("MesagesAvailable", "=" + dataSnapshot.getValue().toString());
+
+                    for (DataSnapshot snap : dataSnapshot.getChildren()) {
+                        messageCount= (int) dataSnapshot.getChildrenCount();
+//                        ChatMessage chatMessage = snap.getValue(ChatMessage.class);
+//                        Log.d("User key", snap.getKey());
+//                        Log.d("User ref", snap.getRef().toString());
+//                        Log.d("User val", snap.getValue().toString());
+//                        chatMessage.setMessageId(snap.getKey());
+//                        mMessagesList.add(chatMessage);
+                    }
+
+                    /**populate messages**/
+//                    populateMessagesRecyclerView();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+    public static long getTimeStamp() {
+//        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
+//        return sdf.format(new Date());
+        long time= System.currentTimeMillis();
+        return time;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        /**Query and populate chat messages**/
+        querymessagesBetweenThisUserAndClickedUser();
+
+
+        /**sets title bar with recepient name**/
+        queryRecipientName(mReceiverId);
     }
 }
 
