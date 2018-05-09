@@ -77,7 +77,6 @@ public class ChatActivity extends AppCompatActivity {
 
     private List<ChatMessage> mMainList = new ArrayList<>();
     private MessagesAdapter adapter = null;
-    private int nextIndex=0;
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
     //File
@@ -92,10 +91,11 @@ public class ChatActivity extends AppCompatActivity {
 
     boolean userScrolled = false;
 
-    private boolean loading = false;
+    private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
 
-    int total_items_to_load=8;
+    int total_items_to_load=10;
+    private boolean swiped = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -178,89 +178,118 @@ public class ChatActivity extends AppCompatActivity {
                 boolean endHasBeenReached = lastVisible + 5 >= totalItemCount;
 
 
-                if (dy < 0) //check for scroll up
+                if (dy < 0 && userScrolled) //check for scroll up
                 {
+
 
                     visibleItemCount = layoutManager.getChildCount();
                     totalItemCount = layoutManager.getItemCount();
-                    pastVisiblesItems = layoutManager.findFirstCompletelyVisibleItemPosition();
+                    pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
                     Log.d("TAG", "Scrolling" + "****" + visibleItemCount + " " + pastVisiblesItems + totalItemCount);
-                    if (!loading) {
+                    if (loading ) {
+
                         if ((visibleItemCount + pastVisiblesItems) <= totalItemCount) {
-                            loading = true;
+                            loading = false;
 //                            Log.v("...", "Last Item !"+messageList.get(0).time);
                             //Do pagination.. i.e. fetch new data
-                            total_items_to_load = total_items_to_load + 8;
+                            total_items_to_load = total_items_to_load + 10;
                             Log.v("...", "total_items_to_load !" + total_items_to_load+" "+pastVisiblesItems);
                             progressBar.setVisibility(View.VISIBLE);
 
+                            swiped = true;
                             refreshData(mMessagesList.get(pastVisiblesItems).getMessageId());
                         }
                     }
                 }else {
+
                     if (totalItemCount > 0 && endHasBeenReached) {
                         //you have reached to the bottom of your recycler view
-                        total_items_to_load=8;
+                        total_items_to_load=10;
                         Log.e("TAG", "Reached end");
 
                     }
                 }
+                userScrolled=false;
             }
         });
         refreshData("");
+
     }
     private void refreshData(String lastMessageID) {
         Log.d("TAG", "Scrolling" + "****");
         Query query;
-        if (total_items_to_load>8) {
+        if (total_items_to_load>10) {
              query = mMessagesDBRefSender.orderByKey().endAt(lastMessageID).limitToLast(total_items_to_load);
         }else {
              query = mMessagesDBRefSender.limitToLast(total_items_to_load);
 
         }
+        loading=true;
 
+        query.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                if(!swiped) {
+                    ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
+                    chatMessage.setMessageId(dataSnapshot.getKey());
+                    mMessagesList.add(chatMessage);
+                    adapter.notifyDataSetChanged();
+                    mChatsRecyclerView.scrollToPosition(mMessagesList.size()-1);
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 //        query.addChildEventListener(childEventListener);
         // copy for removing at onStop()
         query.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot!=null && dataSnapshot.getValue()!=null) {
-                    if (!mMainList.isEmpty())
-                        mMainList.clear();
+                if(swiped) {
+                    if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+                        if (!mMainList.isEmpty())
+                            mMainList.clear();
 
-                    for (DataSnapshot snapshot:dataSnapshot.getChildren())
-                    {
-                        ChatMessage chatMessage = snapshot.getValue(ChatMessage.class);
-                        chatMessage.setMessageId(snapshot.getKey());
-                        mMainList.add(chatMessage);
-                        Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage()+""+total_items_to_load);
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            ChatMessage chatMessage = snapshot.getValue(ChatMessage.class);
+                            chatMessage.setMessageId(snapshot.getKey());
+                            mMainList.add(chatMessage);
+                            Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage() + "" + total_items_to_load);
+                        }
 
+                        mMainList.remove(mMainList.size()-1);// remove duplicate element
+                        mMainList.addAll(mMessagesList);
+                        mMessagesList.clear();
+                        mMessagesList.addAll(mMainList);
 
+                        adapter.notifyDataSetChanged();
+                        swiped = false;
                     }
-
-                    int size=(mMessagesList.size())+mMainList.size();
-                    Log.e(TAG, "size:" + size+" "+mMessagesList.size());
-                    int j=0;
-                    if (total_items_to_load>8) {
-                          for (int i = 0 ; i <mMainList.size(); i++) {
-                              Log.e(TAG, "index:" + i);
-                              mMessagesList.add(0,mMainList.get(j));
-                              j++;
-                          }
-                      }else {
-                          mMessagesList.addAll(mMainList);
-
-                      }
-
-                      loading=false;
-                    adapter.notifyDataSetChanged();
                 }
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                loading=false;
 
             }
         });
