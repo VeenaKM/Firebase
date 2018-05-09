@@ -194,7 +194,7 @@ public class ChatActivity extends AppCompatActivity {
                             //Do pagination.. i.e. fetch new data
                             total_items_to_load = total_items_to_load + 10;
                             Log.v("...", "total_items_to_load !" + total_items_to_load+" "+pastVisiblesItems);
-                            progressBar.setVisibility(View.VISIBLE);
+//                            progressBar.setVisibility(View.VISIBLE);
 
                             swiped = true;
                             refreshData(mMessagesList.get(pastVisiblesItems).getMessageId());
@@ -298,7 +298,7 @@ public class ChatActivity extends AppCompatActivity {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                progressBar.setVisibility(View.GONE);
+//                progressBar.setVisibility(View.GONE);
             }
 
             @Override
