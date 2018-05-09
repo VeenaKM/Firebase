@@ -94,7 +94,7 @@ public class ChatActivity extends AppCompatActivity {
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
 
-    int total_items_to_load=10;
+    int total_items_to_load=12;
     private boolean swiped = false;
 
     @Override
@@ -175,41 +175,49 @@ public class ChatActivity extends AppCompatActivity {
                 LinearLayoutManager layoutManager = LinearLayoutManager.class.cast(recyclerView.getLayoutManager());
 //
                 int lastVisible = layoutManager.findLastVisibleItemPosition();
-                boolean endHasBeenReached = lastVisible + 5 >= totalItemCount;
+                boolean endHasBeenReached = lastVisible + 12 >= totalItemCount;
 
                 if (userScrolled) {
-                    if (dy < 0) //check for scroll up
-                    {
-                          if (loading) {
-                              visibleItemCount = layoutManager.getChildCount();
-                              totalItemCount = layoutManager.getItemCount();
-                              pastVisiblesItems = layoutManager.findFirstCompletelyVisibleItemPosition();
-                              Log.d("TAG", "Scrolling" + "****" + visibleItemCount + " " + pastVisiblesItems + totalItemCount);
+                    int lastvisibleitemposition = mLayoutManager.findFirstVisibleItemPosition();
+                    Log.d("TAG", "adapter" + "****" + adapter.getItemCount()+" "+lastvisibleitemposition);
+//
+                    if (lastvisibleitemposition == 0) {
 
-                              if ((visibleItemCount + pastVisiblesItems) <= totalItemCount) {
-                                loading = false;
-//                            Log.v("...", "Last Item !"+messageList.get(0).time);
-                                //Do pagination.. i.e. fetch new data
-                                total_items_to_load = total_items_to_load + 10;
-                                Log.v("...", "total_items_to_load !" + total_items_to_load + " " + pastVisiblesItems);
+                        if (loading ) {
+
+                            loading = false;
+//                    if (dy < 0) //check for scroll up
+//                    {
+//                          if (loading) {
+//                              pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
+//                              visibleItemCount = layoutManager.getChildCount();
+//                              totalItemCount = layoutManager.getItemCount();
+//                              Log.d("TAG", "Scrolling" + "****" + visibleItemCount + " " + pastVisiblesItems+" " + totalItemCount);
+//
+//                              if (totalItemCount <= (pastVisiblesItems + visibleItemCount))//(visibleItemCount + pastVisiblesItems) <= totalItemCount) {
+//                              {   loading = false;
+//
+////                                total_items_to_load = total_items_to_load + 10;
+//                                Log.v("...", "total_items_to_load !" + total_items_to_load + " " + pastVisiblesItems);
                                 progressBar.setVisibility(View.VISIBLE);
-
+//
                                 swiped = true;
                                 refreshData(mMessagesList.get(pastVisiblesItems).getMessageId());
-                            }else {
-
+//                            }else {
+//                                  Log.d("TAG", "Scrolling" + "no more items ");
+//
                             }
                         }
-                    } else {
-
-                        if (totalItemCount > 0 && endHasBeenReached) {
-
-                            //you have reached to the bottom of your recycler view
-                            total_items_to_load = 10;
-                            Log.e("TAG", "Reached end");
-
-                        }
-                    }
+//                    } else {
+//
+//                        if (totalItemCount > 0 && endHasBeenReached) {
+//
+//                            //you have reached to the bottom of your recycler view
+////                            total_items_to_load = 12;
+//                            Log.e("TAG", "Reached end");
+//
+//                        }
+//                    }
                     userScrolled = false;
                 }
 
@@ -222,15 +230,17 @@ public class ChatActivity extends AppCompatActivity {
     private void refreshData(String lastMessageID) {
         Log.d("TAG", "Scrolling" + "****");
         Query query;
-        if (total_items_to_load>10) {
-             query = mMessagesDBRefSender.orderByKey().endAt(lastMessageID).limitToLast(total_items_to_load);
-        }else {
-             query = mMessagesDBRefSender.limitToLast(total_items_to_load);
-
-        }
+//        if (total_items_to_load>12) {
+//             query = mMessagesDBRefSender.orderByKey().endAt(lastMessageID).limitToLast(total_items_to_load);
+//        }else {
+//             query = mMessagesDBRefSender.limitToLast(total_items_to_load);
+//
+//        }
         loading=true;
         if(!swiped) {
-        query.addChildEventListener(new ChildEventListener() {
+            query = mMessagesDBRefSender.limitToLast(total_items_to_load);
+
+            query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
@@ -240,6 +250,7 @@ public class ChatActivity extends AppCompatActivity {
                     mMessagesList.add(chatMessage);
                     adapter.notifyDataSetChanged();
                     mChatsRecyclerView.scrollToPosition(mMessagesList.size()-1);
+                Log.e(TAG, "onChildAdded1:" + chatMessage.getMessage() + " " + total_items_to_load);
 
             }
 
@@ -264,6 +275,7 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }else {
+            query = mMessagesDBRefSender.orderByKey().endAt(lastMessageID).limitToLast(total_items_to_load);
 
 //        query.addChildEventListener(childEventListener);
             // copy for removing at onStop()
@@ -279,7 +291,7 @@ public class ChatActivity extends AppCompatActivity {
                                 ChatMessage chatMessage = snapshot.getValue(ChatMessage.class);
                                 chatMessage.setMessageId(snapshot.getKey());
                                 mMainList.add(chatMessage);
-                                Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage() + "" + total_items_to_load);
+                                Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage() + " " + total_items_to_load);
                             }
 
                             mMainList.remove(mMainList.size() - 1);// remove duplicate element
