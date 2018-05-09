@@ -22,11 +22,13 @@ import chat.firebase.com.firebasechatapplication.R;
 import chat.firebase.com.firebasechatapplication.UpdateProfileActivity;
 import chat.firebase.com.firebasechatapplication.model.ChatMessage;
 import chat.firebase.com.firebasechatapplication.model.FileModel;
+import chat.firebase.com.firebasechatapplication.viewholder.LoadingViewHolder;
 
 
-public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHolder> {
+public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int ITEM_TYPE_SENT = 0;
     public static final int ITEM_TYPE_RECEIVED = 1;
+    private final int VIEW_TYPE_LOADING = 2;
 
     private List<ChatMessage> mMessagesList=new ArrayList<>();
     private Context mContext;
@@ -99,57 +101,67 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
 
     }
 
-//    public MessagesAdapter(Context mContext) {
-//        this.mContext = mContext;
-//    }
 
     @Override
     public int getItemViewType(int position) {
-        if (mMessagesList.get(position).getSenderId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-            return ITEM_TYPE_SENT;
-        } else {
-            return ITEM_TYPE_RECEIVED;
-        }
+//        if (mMessagesList.size()-1==10)
+//        {
+//            return VIEW_TYPE_LOADING;
+//        }else {
+            if (mMessagesList.get(position).getSenderId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                return ITEM_TYPE_SENT;
+            } else {
+                return ITEM_TYPE_RECEIVED;
+            }
+//        }
     }
 
 
 
     // Create new views (invoked by the layout manager)
     @Override
-    public MessagesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                          int viewType) {
         View v = null;
         if (viewType == ITEM_TYPE_SENT) {
             v = LayoutInflater.from(mContext).inflate(R.layout.sent_msg_row, null);
+            return new ViewHolder(v); // view holder for header items
         } else if (viewType == ITEM_TYPE_RECEIVED) {
             v = LayoutInflater.from(mContext).inflate(R.layout.received_msg_row, null);
+            return new ViewHolder(v); // view holder for header items
+        }else if (viewType == VIEW_TYPE_LOADING) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.item_loading, parent, false);
+            return new LoadingViewHolder(view);
         }
-        return new ViewHolder(v); // view holder for header items
+        return null;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        ChatMessage msg = mMessagesList.get(position);
+        if (holder instanceof ViewHolder) {
+            ViewHolder holder1=(ViewHolder) holder;
+            ChatMessage msg = mMessagesList.get(position);
 
 //        if (msg.getFile()!=null) {
-//            holder.imageView.setVisibility(View.VISIBLE);
-//            holder.msgLayout.setVisibility(View.GONE);
+//            holder1.imageView.setVisibility(View.VISIBLE);
+//            holder1.msgLayout.setVisibility(View.GONE);
 //            FileModel fileModel = msg.getFile();
 //            if (fileModel.getUrl_file() != null)
 //                Picasso.with(mContext).load(fileModel.getUrl_file()).placeholder(R.mipmap.ic_launcher).into(holder.imageView);
 //        }else {
-//            holder.imageView.setVisibility(View.GONE);
-            holder.msgLayout.setVisibility(View.VISIBLE);
-            holder.messageTextView.setText(msg.getMessage());
+//            holder1.imageView.setVisibility(View.GONE);
+            holder1.msgLayout.setVisibility(View.VISIBLE);
+            holder1.messageTextView.setText(msg.getMessage());
+        }else {
+            if (holder instanceof LoadingViewHolder) {
+            LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+            loadingViewHolder.progressBar.setIndeterminate(true);
+        }
 
-//        }
-
-
-
-
+        }
 
     }
     public void addAll(List<ChatMessage> newMessages) {
