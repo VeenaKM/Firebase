@@ -172,57 +172,23 @@ public class ChatActivity extends AppCompatActivity {
                 super.onScrolled(recyclerView, dx, dy);
                 // Here get the child count, item count and visibleitems
                 // from layout manager
-                LinearLayoutManager layoutManager = LinearLayoutManager.class.cast(recyclerView.getLayoutManager());
-//
-                int lastVisible = layoutManager.findLastVisibleItemPosition();
-                boolean endHasBeenReached = lastVisible + 12 >= totalItemCount;
 
                 if (userScrolled) {
                     int lastvisibleitemposition = mLayoutManager.findFirstVisibleItemPosition();
-                    Log.d("TAG", "adapter" + "****" + adapter.getItemCount()+" "+lastvisibleitemposition);
-//
+                    Log.d("TAG", "adapter" + "****" + adapter.getItemCount() + " " + lastvisibleitemposition);
+
                     if (lastvisibleitemposition == 0) {
-
-                        if (loading ) {
-
+                        if (loading) {
                             loading = false;
-//                    if (dy < 0) //check for scroll up
-//                    {
-//                          if (loading) {
-//                              pastVisiblesItems = layoutManager.findFirstVisibleItemPosition();
-//                              visibleItemCount = layoutManager.getChildCount();
-//                              totalItemCount = layoutManager.getItemCount();
-//                              Log.d("TAG", "Scrolling" + "****" + visibleItemCount + " " + pastVisiblesItems+" " + totalItemCount);
-//
-//                              if (totalItemCount <= (pastVisiblesItems + visibleItemCount))//(visibleItemCount + pastVisiblesItems) <= totalItemCount) {
-//                              {   loading = false;
-//
-////                                total_items_to_load = total_items_to_load + 10;
-//                                Log.v("...", "total_items_to_load !" + total_items_to_load + " " + pastVisiblesItems);
-                                progressBar.setVisibility(View.VISIBLE);
-//
-                                swiped = true;
-                                refreshData(mMessagesList.get(pastVisiblesItems).getMessageId());
-//                            }else {
-//                                  Log.d("TAG", "Scrolling" + "no more items ");
-//
-                            }
+                            progressBar.setVisibility(View.VISIBLE);
+                            swiped = true;
+                            refreshData(mMessagesList.get(pastVisiblesItems).getMessageId());
+
                         }
-//                    } else {
-//
-//                        if (totalItemCount > 0 && endHasBeenReached) {
-//
-//                            //you have reached to the bottom of your recycler view
-////                            total_items_to_load = 12;
-//                            Log.e("TAG", "Reached end");
-//
-//                        }
-//                    }
+                    }
                     userScrolled = false;
                 }
-
-                }
-
+            }
         });
         refreshData("");
 
@@ -230,12 +196,6 @@ public class ChatActivity extends AppCompatActivity {
     private void refreshData(String lastMessageID) {
         Log.d("TAG", "Scrolling" + "****");
         Query query;
-//        if (total_items_to_load>12) {
-//             query = mMessagesDBRefSender.orderByKey().endAt(lastMessageID).limitToLast(total_items_to_load);
-//        }else {
-//             query = mMessagesDBRefSender.limitToLast(total_items_to_load);
-//
-//        }
         loading=true;
         if(!swiped) {
             query = mMessagesDBRefSender.limitToLast(total_items_to_load);
@@ -276,8 +236,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }else {
             query = mMessagesDBRefSender.orderByKey().endAt(lastMessageID).limitToLast(total_items_to_load);
-
-//        query.addChildEventListener(childEventListener);
             // copy for removing at onStop()
             query.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -299,9 +257,8 @@ public class ChatActivity extends AppCompatActivity {
                             mMessagesList.clear();
 
                             mMessagesList.addAll(mMainList);
-
                             adapter.notifyDataSetChanged();
-//                        swiped = false;
+
                         }
                     }
 
