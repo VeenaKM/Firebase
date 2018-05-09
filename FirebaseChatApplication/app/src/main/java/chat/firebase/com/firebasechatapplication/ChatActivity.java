@@ -96,14 +96,7 @@ public class ChatActivity extends AppCompatActivity {
     int pastVisiblesItems, visibleItemCount, totalItemCount;
 
     int total_items_to_load=8;
-    private int currentPage = 0;
-    private String messageID=null;
-    private boolean mIsLoading = false;
-    private int TOTAL_ITEM_EACH_LOAD = 3;
-    private String inverseTimestamp="";
-    int messageCount=0;
-    private int mTotalItemCount = 0;
-    private int mFirstVisibleItemPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,58 +177,37 @@ public class ChatActivity extends AppCompatActivity {
                 int lastVisible = layoutManager.findLastVisibleItemPosition();
                 boolean endHasBeenReached = lastVisible + 5 >= totalItemCount;
 
-//                mTotalItemCount = mLayoutManager.getItemCount();
-                mFirstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
-                Log.d("TAG","*** "+ mTotalItemCount +"<="+ "("+mFirstVisibleItemPosition +"+"+ TOTAL_ITEM_EACH_LOAD+")");
-                if (!mIsLoading && mTotalItemCount <= (mFirstVisibleItemPosition + TOTAL_ITEM_EACH_LOAD)) {
-                    loadMoreData(adapter.getLastItemId());
-                    Log.d("TAG","*** load data ***");
-                    mIsLoading = true;
-                }else{
-                    Log.d("TAG","*** Scrolling ***");
-                }
 
-//                if (dy < 0) //check for scroll up
-//                {
-//
-//                    visibleItemCount = layoutManager.getChildCount();
-//                    totalItemCount = layoutManager.getItemCount();
-//                    pastVisiblesItems = layoutManager.findFirstCompletelyVisibleItemPosition();
-//                    Log.d("TAG", "Scrolling" + "****" + visibleItemCount + " " + pastVisiblesItems + totalItemCount);
-//                    if (!loading) {
-//                        if ((visibleItemCount + pastVisiblesItems) <= totalItemCount) {
-//                            loading = true;
-////                            Log.v("...", "Last Item !"+messageList.get(0).time);
-//                            //Do pagination.. i.e. fetch new data
-//                            total_items_to_load = total_items_to_load + 8;
-//                            Log.v("...", "total_items_to_load !" + total_items_to_load+" "+pastVisiblesItems);
-//                            progressBar.setVisibility(View.VISIBLE);
-//
-//                            refreshData(mMessagesList.get(pastVisiblesItems).getMessageId());
-//                        }
-//                    }
-//                }else {
-//                    if (totalItemCount > 0 && endHasBeenReached) {
-//                        //you have reached to the bottom of your recycler view
-//                        total_items_to_load=8;
-//                        Log.e("TAG", "Reached end");
-//
-//                    }
-//                }
+                if (dy < 0) //check for scroll up
+                {
+
+                    visibleItemCount = layoutManager.getChildCount();
+                    totalItemCount = layoutManager.getItemCount();
+                    pastVisiblesItems = layoutManager.findFirstCompletelyVisibleItemPosition();
+                    Log.d("TAG", "Scrolling" + "****" + visibleItemCount + " " + pastVisiblesItems + totalItemCount);
+                    if (!loading) {
+                        if ((visibleItemCount + pastVisiblesItems) <= totalItemCount) {
+                            loading = true;
+//                            Log.v("...", "Last Item !"+messageList.get(0).time);
+                            //Do pagination.. i.e. fetch new data
+                            total_items_to_load = total_items_to_load + 8;
+                            Log.v("...", "total_items_to_load !" + total_items_to_load+" "+pastVisiblesItems);
+                            progressBar.setVisibility(View.VISIBLE);
+
+                            refreshData(mMessagesList.get(pastVisiblesItems).getMessageId());
+                        }
+                    }
+                }else {
+                    if (totalItemCount > 0 && endHasBeenReached) {
+                        //you have reached to the bottom of your recycler view
+                        total_items_to_load=8;
+                        Log.e("TAG", "Reached end");
+
+                    }
+                }
             }
         });
         refreshData("");
-    }
-    private void loadMoreData(String lastItemId){
-        //messageCount: is the total comments stored in firebase database
-
-        if ((currentPage * TOTAL_ITEM_EACH_LOAD) <= messageCount) {
-            Log.e("current page=",""+currentPage);
-            Log.e("messageCount=",""+messageCount);
-            currentPage++;
-
-            refreshData(lastItemId);
-        }
     }
     private void refreshData(String lastMessageID) {
         Log.d("TAG", "Scrolling" + "****");
@@ -263,6 +235,8 @@ public class ChatActivity extends AppCompatActivity {
                         chatMessage.setMessageId(snapshot.getKey());
                         mMainList.add(chatMessage);
                         Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage()+""+total_items_to_load);
+
+
                     }
 
                     int size=(mMessagesList.size())+mMainList.size();
