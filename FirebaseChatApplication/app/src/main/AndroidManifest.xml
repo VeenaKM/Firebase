@@ -30,6 +30,8 @@
         <activity android:name=".UpdateProfileActivity" android:parentActivityName=".ChatUsersActivity"></activity>
 
         <activity android:name=".MessageActivity"/>
+        <activity android:name=".ChatActivity" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"

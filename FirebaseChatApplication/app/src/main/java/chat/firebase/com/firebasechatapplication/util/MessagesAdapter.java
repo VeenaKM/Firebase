@@ -16,6 +16,7 @@ import com.squareup.picasso.Picasso;
 import java.util.ArrayList;
 import java.util.List;
 
+import chat.firebase.com.firebasechatapplication.ChatActivity;
 import chat.firebase.com.firebasechatapplication.ChatMessagesActivity;
 import chat.firebase.com.firebasechatapplication.R;
 import chat.firebase.com.firebasechatapplication.UpdateProfileActivity;
@@ -55,7 +56,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.ViewHo
                 @Override
                 public boolean onLongClick(View v) {
                     Toast.makeText(mContext,"Removed "+getAdapterPosition(),Toast.LENGTH_SHORT).show();
-                    ((ChatMessagesActivity)mContext).removeSenderMessage(getAdapterPosition());
+                    ((ChatActivity)mContext).removeSenderMessage(getAdapterPosition());
                     return true;
                 }
             });

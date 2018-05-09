@@ -6,9 +6,16 @@
     android:layout_height="match_parent"
     android:padding="10dp">
 
+    <ProgressBar
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:visibility="invisible"
+        android:layout_gravity="center"
+        android:id="@+id/progressBar"/>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/messagesRecyclerView"
         android:layout_width="match_parent"
+        android:layout_below="@+id/progressBar"
         android:layout_marginBottom="60dp"
         android:layout_height="match_parent"/>
 

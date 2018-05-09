@@ -113,7 +113,6 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 rcvListMessage.smoothScrollToPosition(mAdapter.getItemCount());
-
             }
 
         });
