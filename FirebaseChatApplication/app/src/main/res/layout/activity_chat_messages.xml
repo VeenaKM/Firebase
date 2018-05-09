@@ -9,7 +9,8 @@
     <ProgressBar
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:visibility="invisible"
+        android:visibility="gone"
+        android:layout_centerHorizontal="true"
         android:layout_gravity="center"
         android:id="@+id/progressBar"/>
     <android.support.v7.widget.RecyclerView
