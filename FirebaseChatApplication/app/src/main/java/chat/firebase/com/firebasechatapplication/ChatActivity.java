@@ -13,8 +13,10 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.LinearSmoothScroller;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -127,6 +129,7 @@ public class ChatActivity extends AppCompatActivity {
         mStorageRefSender = FirebaseStorage.getInstance().getReference().child("Photos").child("Users");
         mStorageRefReceiver = FirebaseStorage.getInstance().getReference().child("Photos").child("Users");
 
+        mLayoutManager.setSmoothScrollbarEnabled(true);
 
         /**listen to send message imagebutton click**/
         mSendImageButton.setOnClickListener(new View.OnClickListener() {
@@ -181,6 +184,7 @@ public class ChatActivity extends AppCompatActivity {
                         if (loading) {
                             loading = false;
                             progressBar.setVisibility(View.VISIBLE);
+//                            adapter.isLoading(true);
                             swiped = true;
                             refreshData(mMessagesList.get(pastVisiblesItems).getMessageId());
 
@@ -257,7 +261,10 @@ public class ChatActivity extends AppCompatActivity {
                             mMessagesList.clear();
 
                             mMessagesList.addAll(mMainList);
+//
+
                             adapter.notifyDataSetChanged();
+//                            mChatsRecyclerView.smoothScrollToPosition(0);
 
                         }
                     }
@@ -275,6 +282,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 progressBar.setVisibility(View.GONE);
+//                adapter.isLoading(false);
             }
 
             @Override
@@ -525,41 +533,6 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
-//    private void querymessagesBetweenThisUserAndClickedUser(){
-//        Log.e("receiver_id=","="+mReceiverId);
-//        Log.e("sender_id=","="+FirebaseAuth.getInstance().getUid());
-//
-//        mMessagesDBRefSender.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-////                mMessagesList.clear();
-//                if(dataSnapshot!=null && dataSnapshot.getValue()!=null) {
-//                    Log.e("MesagesAvailable", "=" + dataSnapshot.getValue().toString());
-//
-//                    for (DataSnapshot snap : dataSnapshot.getChildren()) {
-//                        messageCount= (int) dataSnapshot.getChildrenCount();
-////                        ChatMessage chatMessage = snap.getValue(ChatMessage.class);
-////                        Log.d("User key", snap.getKey());
-////                        Log.d("User ref", snap.getRef().toString());
-////                        Log.d("User val", snap.getValue().toString());
-////                        chatMessage.setMessageId(snap.getKey());
-////                        mMessagesList.add(chatMessage);
-//                    }
-//
-//                    /**populate messages**/
-////                    populateMessagesRecyclerView();
-//                }
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-//
-//
-//    }
     public static long getTimeStamp() {
 //        SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a");
 //        return sdf.format(new Date());

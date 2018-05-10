@@ -34,6 +34,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Context mContext;
 
 
+    private boolean isLoading=false;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -101,19 +102,24 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     }
 
+    public void isLoading(boolean isLoading)
+    {
+        this.isLoading=isLoading;
+
+    }
 
     @Override
     public int getItemViewType(int position) {
-//        if (mMessagesList.size()-1==10)
-//        {
-//            return VIEW_TYPE_LOADING;
-//        }else {
+        if (isLoading)
+        {
+            return VIEW_TYPE_LOADING;
+        }else {
             if (mMessagesList.get(position).getSenderId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 return ITEM_TYPE_SENT;
             } else {
                 return ITEM_TYPE_RECEIVED;
             }
-//        }
+        }
     }
 
 
