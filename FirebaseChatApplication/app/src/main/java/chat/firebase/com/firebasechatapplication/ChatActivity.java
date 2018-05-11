@@ -77,8 +77,7 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference mUsersRef;
     private List<ChatMessage> mMessagesList = new ArrayList<>();
 
-    private List<ChatMessage> mMainList = new ArrayList<>();
-    private MessagesAdapter adapter = null;
+   private MessagesAdapter adapter = null;
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
     //File
@@ -89,13 +88,11 @@ public class ChatActivity extends AppCompatActivity {
     private String mReceiverId;
     private String mReceiverName;
 
-    private ChildEventListener mMessageListener;
-
     boolean userScrolled = false;
 
-    private boolean loading = true;
-    int pastVisiblesItems, visibleItemCount, totalItemCount;
+    private boolean loading = false;
 
+    private String lastMessageID;
     int total_items_to_load=12;
     private boolean swiped = false;
 
@@ -137,8 +134,6 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String message = mMessageEditText.getText().toString();
                 String senderId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-
                 if(message.isEmpty()){
                     Toast.makeText(ChatActivity.this, "You must enter a message", Toast.LENGTH_SHORT).show();
                 }else {
@@ -175,21 +170,22 @@ public class ChatActivity extends AppCompatActivity {
                 super.onScrolled(recyclerView, dx, dy);
                 // Here get the child count, item count and visibleitems
                 // from layout manager
+                LinearLayoutManager layoutManager=LinearLayoutManager.class.cast(recyclerView.getLayoutManager());
+//
+//                if (userScrolled) {
+                       int lastvisibleitemposition =  layoutManager.findFirstCompletelyVisibleItemPosition();
+                       Log.d("TAG", "adapter" + "****" + adapter.getItemCount() + " " + lastvisibleitemposition);
 
-                if (userScrolled) {
-                    int lastvisibleitemposition = mLayoutManager.findFirstVisibleItemPosition();
-                    Log.d("TAG", "adapter" + "****" + adapter.getItemCount() + " " + lastvisibleitemposition);
+                           if (!loading && lastvisibleitemposition == 0 && mMessagesList.size()!=0) {
 
-                    if (lastvisibleitemposition == 0) {
-                        if (loading) {
-                            loading = false;
-                            progressBar.setVisibility(View.VISIBLE);
+//                               progressBar.setVisibility(View.VISIBLE);
 //                            adapter.isLoading(true);
-                            swiped = true;
-                            refreshData(mMessagesList.get(pastVisiblesItems).getMessageId());
+                               swiped = true;
+                               refreshData(mMessagesList.get(lastvisibleitemposition).getMessageId());
 
-                        }
-                    }
+                               loading = true;
+
+//                   }
                     userScrolled = false;
                 }
             }
@@ -200,85 +196,18 @@ public class ChatActivity extends AppCompatActivity {
     private void refreshData(String lastMessageID) {
         Log.d("TAG", "Scrolling" + "****");
         Query query;
-        loading=true;
+
         if(!swiped) {
+
             query = mMessagesDBRefSender.limitToLast(total_items_to_load);
+            query.addChildEventListener(childEventListener);
 
-            query.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-
-                    ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
-                    chatMessage.setMessageId(dataSnapshot.getKey());
-                    mMessagesList.add(chatMessage);
-                    adapter.notifyDataSetChanged();
-                    mChatsRecyclerView.scrollToPosition(mMessagesList.size()-1);
-                Log.e(TAG, "onChildAdded1:" + chatMessage.getMessage() + " " + total_items_to_load);
-
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }else {
             query = mMessagesDBRefSender.orderByKey().endAt(lastMessageID).limitToLast(total_items_to_load);
-            // copy for removing at onStop()
-            query.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
+            query.addValueEventListener(valueEventListener);
 
-                        if (dataSnapshot != null && dataSnapshot.getValue() != null) {
-                            if (!mMainList.isEmpty())
-                                mMainList.clear();
-
-                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                ChatMessage chatMessage = snapshot.getValue(ChatMessage.class);
-                                chatMessage.setMessageId(snapshot.getKey());
-                                mMainList.add(chatMessage);
-                                Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage() + " " + total_items_to_load);
-                            }
-
-                            mMainList.remove(mMainList.size() - 1);// remove duplicate element
-                            mMainList.addAll(mMessagesList);
-                            mMessagesList.clear();
-
-                            mMessagesList.addAll(mMainList);
-//
-
-                            adapter.notifyDataSetChanged();
-//                            mChatsRecyclerView.smoothScrollToPosition(0);
-
-                        }
-                    }
-
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
         }
-//        mMessageListener = childEventListener;
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+      query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 progressBar.setVisibility(View.GONE);
@@ -293,6 +222,74 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+    private ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            List<ChatMessage> arrayList = new ArrayList<>();
+
+            if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    ChatMessage chatMessage = snapshot.getValue(ChatMessage.class);
+                    chatMessage.setMessageId(snapshot.getKey());
+                    lastMessageID=dataSnapshot.getKey();
+                    arrayList.add(chatMessage);
+                    Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage() + " " + total_items_to_load);
+                }
+
+                if (arrayList.size()>0) {
+                    arrayList.remove(arrayList.size() - 1);// remove duplicate element
+                    mMessagesList.addAll(0, arrayList);
+                    adapter.notifyDataSetChanged();
+                    loading=false;
+//                            mChatsRecyclerView.smoothScrollToPosition(arrayList.size());
+                }
+
+            }
+        }
+
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
+
+    private ChildEventListener childEventListener = new ChildEventListener() {
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+
+            ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
+            chatMessage.setMessageId(dataSnapshot.getKey());
+            mMessagesList.add(chatMessage);
+            lastMessageID=dataSnapshot.getKey();
+            adapter.notifyDataSetChanged();
+            mChatsRecyclerView.scrollToPosition(mMessagesList.size()-1);
+            Log.e(TAG, "onChildAdded1:" + chatMessage.getMessage() + " " + total_items_to_load);
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    };
     private void sendMessageToFirebase(String message, String senderId, String receiverId){
         ChatMessage newMsg = new ChatMessage(message, senderId, receiverId,null,getTimeStamp());
 
@@ -547,16 +544,13 @@ public class ChatActivity extends AppCompatActivity {
 //        querymessagesBetweenThisUserAndClickedUser();
 
 
+
         /**sets title bar with recepient name**/
         queryRecipientName(mReceiverId);
     }
     @Override
     protected void onStop() {
         super.onStop();
-
-        if (mMessageListener != null) {
-            mMessagesDBRefSender.removeEventListener(mMessageListener);
-        }
 
         for (ChatMessage message: mMessagesList) {
             Log.e(TAG, "listItem: " + message.getMessage());

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,11 +35,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private Context mContext;
 
 
-    private boolean isLoading=false;
-
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
+    @Override
+    public int getItemViewType(int position) {
+        if (position==0)
+        {
+            return VIEW_TYPE_LOADING;
+        }else {
+            if (mMessagesList.get(position-1).getSenderId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                return ITEM_TYPE_SENT;
+            } else {
+                return ITEM_TYPE_RECEIVED;
+            }
+        }
+    }
     public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
         public TextView messageTextView;
@@ -54,7 +63,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             imageView = (ImageView) v.findViewById(R.id.image);
             msgLayout = (LinearLayout) v.findViewById(R.id.layout);
 
-
             v.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
@@ -65,25 +73,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
         }
     }
-
-    public class ViewHolder2 extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public TextView messageTextView;
-        ImageView imageView;
-        LinearLayout msgLayout;
-
-        public View layout;
-
-        public ViewHolder2(View v) {
-            super(v);
-            layout = v;
-            messageTextView = (TextView) v.findViewById(R.id.chatMsgTextView);
-            imageView = (ImageView) v.findViewById(R.id.image);
-            msgLayout = (LinearLayout) v.findViewById(R.id.layout);
-
-        }
-    }
-
 
     public void add(int position, ChatMessage message) {
         mMessagesList.add(position, message);
@@ -101,29 +90,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         mContext = context;
 
     }
-
-    public void isLoading(boolean isLoading)
-    {
-        this.isLoading=isLoading;
-
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        if (isLoading)
-        {
-            return VIEW_TYPE_LOADING;
-        }else {
-            if (mMessagesList.get(position).getSenderId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                return ITEM_TYPE_SENT;
-            } else {
-                return ITEM_TYPE_RECEIVED;
-            }
-        }
-    }
-
-
-
     // Create new views (invoked by the layout manager)
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
@@ -147,20 +113,24 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
+
         if (holder instanceof ViewHolder) {
-            ViewHolder holder1=(ViewHolder) holder;
+
+            position=position -  1;
+            ViewHolder holder1 = (ViewHolder) holder;
             ChatMessage msg = mMessagesList.get(position);
 
-//        if (msg.getFile()!=null) {
-//            holder1.imageView.setVisibility(View.VISIBLE);
-//            holder1.msgLayout.setVisibility(View.GONE);
-//            FileModel fileModel = msg.getFile();
-//            if (fileModel.getUrl_file() != null)
-//                Picasso.with(mContext).load(fileModel.getUrl_file()).placeholder(R.mipmap.ic_launcher).into(holder.imageView);
-//        }else {
-//            holder1.imageView.setVisibility(View.GONE);
-            holder1.msgLayout.setVisibility(View.VISIBLE);
-            holder1.messageTextView.setText(msg.getMessage());
+                if (msg.getFile() != null) {
+                holder1.imageView.setVisibility(View.VISIBLE);
+                holder1.msgLayout.setVisibility(View.GONE);
+                FileModel fileModel = msg.getFile();
+                if (fileModel.getUrl_file() != null)
+                    Picasso.with(mContext).load(fileModel.getUrl_file()).placeholder(R.mipmap.ic_launcher).into(holder1.imageView);
+            } else {
+                holder1.imageView.setVisibility(View.GONE);
+                holder1.msgLayout.setVisibility(View.VISIBLE);
+                holder1.messageTextView.setText(msg.getMessage());
+            }
         }else {
             if (holder instanceof LoadingViewHolder) {
             LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
@@ -180,7 +150,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mMessagesList.size();
+        return mMessagesList.size()+1;
     }
 
     public String getLastItemId() {

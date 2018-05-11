@@ -11,6 +11,7 @@
         android:layout_alignParentLeft="true"
         android:background="@drawable/in_message_bg"
         android:orientation="vertical"
+        android:id="@+id/layout"
         android:paddingBottom="10dp">
 
         <TextView
@@ -28,4 +29,5 @@
         android:visibility="gone"
         android:layout_alignParentLeft="true"
         android:id="@+id/image"/>
+
 </RelativeLayout>
