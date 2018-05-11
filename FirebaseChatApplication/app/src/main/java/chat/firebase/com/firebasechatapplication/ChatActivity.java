@@ -92,7 +92,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private boolean loading = false;
 
-    private String lastMessageID;
+
     int total_items_to_load=12;
     private boolean swiped = false;
 
@@ -178,7 +178,7 @@ public class ChatActivity extends AppCompatActivity {
 
                            if (!loading && lastvisibleitemposition == 0 && mMessagesList.size()!=0) {
 
-//                               progressBar.setVisibility(View.VISIBLE);
+                               progressBar.setVisibility(View.VISIBLE);
 //                            adapter.isLoading(true);
                                swiped = true;
                                refreshData(mMessagesList.get(lastvisibleitemposition).getMessageId());
@@ -232,7 +232,6 @@ public class ChatActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ChatMessage chatMessage = snapshot.getValue(ChatMessage.class);
                     chatMessage.setMessageId(snapshot.getKey());
-                    lastMessageID=dataSnapshot.getKey();
                     arrayList.add(chatMessage);
                     Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage() + " " + total_items_to_load);
                 }
@@ -242,7 +241,12 @@ public class ChatActivity extends AppCompatActivity {
                     mMessagesList.addAll(0, arrayList);
                     adapter.notifyDataSetChanged();
                     loading=false;
-//                            mChatsRecyclerView.smoothScrollToPosition(arrayList.size());
+
+
+                    int firstVisibleItemPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
+                    int lastVisibleItemPosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
+
+                    mChatsRecyclerView.smoothScrollToPosition(arrayList.size());
                 }
 
             }
@@ -263,7 +267,6 @@ public class ChatActivity extends AppCompatActivity {
             ChatMessage chatMessage = dataSnapshot.getValue(ChatMessage.class);
             chatMessage.setMessageId(dataSnapshot.getKey());
             mMessagesList.add(chatMessage);
-            lastMessageID=dataSnapshot.getKey();
             adapter.notifyDataSetChanged();
             mChatsRecyclerView.scrollToPosition(mMessagesList.size()-1);
             Log.e(TAG, "onChildAdded1:" + chatMessage.getMessage() + " " + total_items_to_load);
@@ -552,6 +555,8 @@ public class ChatActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
+        mMessagesDBRefSender.removeEventListener(childEventListener);
+        mMessagesDBRefSender.removeEventListener(valueEventListener);
         for (ChatMessage message: mMessagesList) {
             Log.e(TAG, "listItem: " + message.getMessage());
         }

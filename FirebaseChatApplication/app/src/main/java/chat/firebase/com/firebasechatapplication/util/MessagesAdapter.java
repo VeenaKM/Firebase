@@ -37,16 +37,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemViewType(int position) {
-        if (position==0)
-        {
-            return VIEW_TYPE_LOADING;
-        }else {
-            if (mMessagesList.get(position-1).getSenderId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+//        if (position==0)
+//        {
+//            return VIEW_TYPE_LOADING;
+//        }else {
+            if (mMessagesList.get(position).getSenderId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                 return ITEM_TYPE_SENT;
             } else {
                 return ITEM_TYPE_RECEIVED;
             }
-        }
+//        }
     }
     public class ViewHolder extends RecyclerView.ViewHolder {
         // each data item is just a string in this case
@@ -101,9 +101,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         } else if (viewType == ITEM_TYPE_RECEIVED) {
             v = LayoutInflater.from(mContext).inflate(R.layout.received_msg_row, null);
             return new ViewHolder(v); // view holder for header items
-        }else if (viewType == VIEW_TYPE_LOADING) {
-            View view = LayoutInflater.from(mContext).inflate(R.layout.item_loading, parent, false);
-            return new LoadingViewHolder(view);
+//        }else if (viewType == VIEW_TYPE_LOADING) {
+//            View view = LayoutInflater.from(mContext).inflate(R.layout.item_loading, parent, false);
+//            return new LoadingViewHolder(view);
         }
         return null;
     }
@@ -116,7 +116,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         if (holder instanceof ViewHolder) {
 
-            position=position -  1;
+//            position=position -  1;
             ViewHolder holder1 = (ViewHolder) holder;
             ChatMessage msg = mMessagesList.get(position);
 
@@ -140,24 +140,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
     }
-    public void addAll(List<ChatMessage> newMessages) {
 
-        mMessagesList.addAll(newMessages);
-        int initialSize = mMessagesList.size()-1;
-        notifyItemInserted(initialSize);
-//        notifyItemRangeInserted(initialSize, newMessages.size());
-    }
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mMessagesList.size()+1;
+        return mMessagesList.size();
     }
 
     public String getLastItemId() {
         return mMessagesList.get(mMessagesList.size() - 1).getMessageId();
     }
-    public String getFirstItemId() {
-        return mMessagesList.get(0).getMessageId();
-    }
+
 
 }
