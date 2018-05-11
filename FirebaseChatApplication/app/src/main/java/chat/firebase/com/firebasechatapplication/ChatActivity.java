@@ -173,10 +173,12 @@ public class ChatActivity extends AppCompatActivity {
                 LinearLayoutManager layoutManager=LinearLayoutManager.class.cast(recyclerView.getLayoutManager());
 //
 //                if (userScrolled) {
-                       int lastvisibleitemposition =  layoutManager.findFirstCompletelyVisibleItemPosition();
+                if (dy<0)
+                {
+                       int lastvisibleitemposition =  layoutManager.findFirstVisibleItemPosition();
                        Log.d("TAG", "adapter" + "****" + adapter.getItemCount() + " " + lastvisibleitemposition);
 
-                           if (!loading && lastvisibleitemposition == 0 && mMessagesList.size()!=0) {
+                           if (!loading && lastvisibleitemposition == 0 ) {
 
                                progressBar.setVisibility(View.VISIBLE);
 //                            adapter.isLoading(true);
@@ -185,8 +187,9 @@ public class ChatActivity extends AppCompatActivity {
 
                                loading = true;
 
-//                   }
-                    userScrolled = false;
+                   }
+
+//                    userScrolled = false;
                 }
             }
         });
@@ -204,8 +207,44 @@ public class ChatActivity extends AppCompatActivity {
 
     }else {
             query = mMessagesDBRefSender.orderByKey().endAt(lastMessageID).limitToLast(total_items_to_load);
-            query.addValueEventListener(valueEventListener);
+            query.addValueEventListener(new ValueEventListener() {
 
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    List<ChatMessage> arrayList = new ArrayList<>();
+
+                    if (dataSnapshot != null && dataSnapshot.getValue() != null) {
+
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            ChatMessage chatMessage = snapshot.getValue(ChatMessage.class);
+                            chatMessage.setMessageId(snapshot.getKey());
+                            arrayList.add(chatMessage);
+                            Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage() + " " + total_items_to_load);
+                        }
+
+                        if (arrayList.size()>0) {
+                            arrayList.remove(arrayList.size() - 1);// remove duplicate element
+                            mMessagesList.addAll(0, arrayList);
+                            int firstVisibleItemPosition = mLayoutManager.findFirstVisibleItemPosition();
+                            int lastVisibleItemPosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
+                            Log.e(TAG, "lastVisibleItemPosition:" + lastVisibleItemPosition + " firstVisibleItemPosition " + firstVisibleItemPosition);
+
+                            mChatsRecyclerView.smoothScrollToPosition(arrayList.size());
+
+                            adapter.notifyDataSetChanged();
+                            loading=false;
+
+
+
+                        }
+
+                    }
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
         }
       query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -222,42 +261,7 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
-    private ValueEventListener valueEventListener = new ValueEventListener() {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            List<ChatMessage> arrayList = new ArrayList<>();
 
-            if (dataSnapshot != null && dataSnapshot.getValue() != null) {
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    ChatMessage chatMessage = snapshot.getValue(ChatMessage.class);
-                    chatMessage.setMessageId(snapshot.getKey());
-                    arrayList.add(chatMessage);
-                    Log.e(TAG, "onChildAdded2:" + chatMessage.getMessage() + " " + total_items_to_load);
-                }
-
-                if (arrayList.size()>0) {
-                    arrayList.remove(arrayList.size() - 1);// remove duplicate element
-                    mMessagesList.addAll(0, arrayList);
-                    adapter.notifyDataSetChanged();
-                    loading=false;
-
-
-                    int firstVisibleItemPosition = mLayoutManager.findFirstCompletelyVisibleItemPosition();
-                    int lastVisibleItemPosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
-
-                    mChatsRecyclerView.smoothScrollToPosition(arrayList.size());
-                }
-
-            }
-        }
-
-
-        @Override
-        public void onCancelled(DatabaseError databaseError) {
-
-        }
-    };
 
     private ChildEventListener childEventListener = new ChildEventListener() {
         @Override
@@ -556,7 +560,6 @@ public class ChatActivity extends AppCompatActivity {
         super.onStop();
 
         mMessagesDBRefSender.removeEventListener(childEventListener);
-        mMessagesDBRefSender.removeEventListener(valueEventListener);
         for (ChatMessage message: mMessagesList) {
             Log.e(TAG, "listItem: " + message.getMessage());
         }
