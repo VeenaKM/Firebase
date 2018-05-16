@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/simple_activity_a_imageView"
+        android:layout_width="128dp"
+        android:layout_height="96dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/lion"
+        android:onClick="goToActivityA"
+        android:layout_margin="10dp"
+        android:transitionName="simple_activity_transition"
+        tools:ignore="UnusedAttribute" />
+
+    <!--<ImageButton-->
+        <!--android:id="@+id/button"-->
+        <!--android:layout_width="128dp"-->
+        <!--android:layout_height="96dp"-->
+        <!--android:layout_margin="10dp"-->
+        <!--android:onClick="goToActivityB"-->
+        <!--android:background="@drawable/bg_text_drawable"-->
+        <!--android:src="@android:drawable/ic_media_play" />-->
+</LinearLayout>

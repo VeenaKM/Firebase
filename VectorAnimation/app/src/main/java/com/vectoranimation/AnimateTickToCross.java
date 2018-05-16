@@ -12,7 +12,7 @@ public class AnimateTickToCross extends Activity {
     private ImageView tickCross;
     private AnimatedVectorDrawable tickToCross;
     private AnimatedVectorDrawable crossToTick;
-    private boolean tick = true;
+    private boolean tick ;
 
     @SuppressLint("NewApi")
     @Override

@@ -7,4 +7,14 @@
     <!-- Pause Icon -->
     <string name="pause_icon_upper_path_data">M 32 40 L 32 56  L 96 56 L 96 40 Z</string>
     <string name="pause_icon_bottom_path_data">M 32 88 L 32 72 L 96 72 L 96 88 Z</string>
+    <string name="desc">Shared element transitions take place in the window\'s ViewOverlay. This overlay layer sits on top of all other views, ensuring that any shared element set doesn\'t get drawn over ruining the Shared Element Transition experience.  A great example is in Google Play Music. When selecting an album from a list you are transitioned to a detail screen listing the album\'s songs. The album cover is a shared element, transitioning from a small square to a larger one at the top of the screen.</string>
+    <string name="shared_element">Shared Element</string>
+    <string name="vector_animation">Vector Animation</string>
+    <string name="transition_animation">Transition Animation</string>
+    <string name="bounce_anim">Bounce Animation</string>
+    <string name="animate_tick_cross">Animate Tick Cross</string>
+    <string name="auto_transition">Auto Transition Text</string>
+    <string name="transition">Transition Animation</string>
+    <string name="shuffle_transition">Shuffle Transition</string>
+    <string name="path_motion">Path Motion</string>
 </resources>

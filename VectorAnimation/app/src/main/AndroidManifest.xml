@@ -9,13 +9,29 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AnimateTickToCross">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+        <activity android:name=".ChooserActivity" >
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
         </activity>
+        <activity android:name=".SharedElementTransition.ActivityB" />
+        <activity android:name=".AnimatedClockActivity" />
+        <activity android:name=".AnimateTickToCross" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".NewActivity" />
+        <activity android:name=".VectorActivity" />
+        <activity android:name=".SharedElementTransition.ActivityA" />
+        <activity android:name=".bounceAnim.BounceActivity" />
+        <activity android:name=".SharedElementTransition.BounceTransition" />
+        <activity android:name=".SharedElementTransition.AnimationChooserActivity" />
+        <activity android:name=".TranistionContainerActivity" />
+        <activity android:name=".TransitionChooser.TransitionContainerActivity" />
+        <activity android:name=".TransitionChooser.TransitionChooser" />
+        <activity android:name=".TransitionChooser.ShuffleActivity" />
+        <activity android:name=".TransitionChooser.PathMotionActivity" />
+
     </application>
 
 </manifest>

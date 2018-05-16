@@ -5,22 +5,22 @@
     tools:ignore="NewApi">
 
     <!--&lt;!&ndash; rotates the group named second_hand of the clock vector&ndash;&gt;-->
-    <target
-    android:name="second_hand"
-    android:animation="@animator/rotate_second_hand" />
-
-    <!-- rotates the group named minute_hand of the clock vector-->
-    <target
-    android:name="minute_hand"
-    android:animation="@animator/rotate_minute_hand" />
-
-    <!-- animates strokeWidth of the outer ring-->
     <!--<target-->
-        <!--android:name="circle"-->
-        <!--android:animation="@animator/change_width" />-->
+    <!--android:name="second_hand"-->
+    <!--android:animation="@animator/rotate_second_hand" />-->
 
-    <!--&lt;!&ndash; animates alpha of the outer ring&ndash;&gt;-->
+    <!--&lt;!&ndash; rotates the group named minute_hand of the clock vector&ndash;&gt;-->
     <!--<target-->
-        <!--android:name="circle"-->
-        <!--android:animation="@animator/change_alpha" />-->
+    <!--android:name="minute_hand"-->
+    <!--android:animation="@animator/rotate_minute_hand" />-->
+
+     <!--animates strokeWidth of the outer ring-->
+    <target
+        android:name="circle"
+        android:animation="@animator/change_width" />
+
+    <!-- animates alpha of the outer ring-->
+    <target
+        android:name="circle"
+        android:animation="@animator/change_alpha" />
 </animated-vector>
