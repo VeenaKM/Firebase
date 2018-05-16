@@ -229,11 +229,12 @@ public class ChatActivity extends AppCompatActivity {
                             int lastVisibleItemPosition = mLayoutManager.findLastCompletelyVisibleItemPosition();
                             Log.e(TAG, "lastVisibleItemPosition:" + lastVisibleItemPosition + " firstVisibleItemPosition " + firstVisibleItemPosition);
 
-                            mChatsRecyclerView.smoothScrollToPosition(arrayList.size());
+
 
                             adapter.notifyDataSetChanged();
                             loading=false;
 
+                            mChatsRecyclerView.smoothScrollToPosition(arrayList.size()+firstVisibleItemPosition);
 
 
                         }

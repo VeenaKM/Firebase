@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/ic_download"
+    tools:targetApi="lollipop">
+    <!--<target-->
+        <!--android:animation="@anim/ic_download_animator1"-->
+        <!--android:name="page1"/>-->
+    <target
+        android:animation="@animator/ic_download_animator"
+        android:name="page"/>
+</animated-vector>
