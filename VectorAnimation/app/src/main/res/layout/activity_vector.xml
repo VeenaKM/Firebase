@@ -19,10 +19,16 @@
         app:srcCompat="@drawable/vd_menu"
         android:onClick="animateMenu"
         />
-    <ImageView
-        android:id="@+id/tick_cross"
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_margin="5dp"
+        android:tint="@color/theme_green_accent"
+        app:srcCompat="@drawable/ic_tick"
+        app:fabSize="normal"
         android:onClick="animate"
-        app:srcCompat="@drawable/ic_tick" />
+        app:layout_anchorGravity="bottom|end"/>
+
 </LinearLayout>

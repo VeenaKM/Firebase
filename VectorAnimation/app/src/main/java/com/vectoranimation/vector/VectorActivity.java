@@ -8,6 +8,7 @@ import android.graphics.drawable.Animatable;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,8 +20,8 @@ import com.vectoranimation.R;
 public class VectorActivity extends AppCompatActivity {
 
 
-    private ImageView ivTickCross;
-    private boolean tick,isMenu=true ;
+    private FloatingActionButton mFloatingActionButton;
+    private boolean tick=true,isMenu=true ;
     ImageView ivMenu;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +69,7 @@ public class VectorActivity extends AppCompatActivity {
 
     private void initViews() {
         ivMenu = findViewById(R.id.menu);
-        ivTickCross = (ImageView) findViewById(R.id.tick_cross);
+        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
     }
     @SuppressLint("NewApi")
     public void animateMenu(View view) {
@@ -88,7 +89,7 @@ public class VectorActivity extends AppCompatActivity {
         AnimatedVectorDrawable tickToCross = (AnimatedVectorDrawable) getDrawable(R.drawable.avd_tick_to_cross);
         AnimatedVectorDrawable crossToTick = (AnimatedVectorDrawable) getDrawable(R.drawable.avd_cross_to_tick);
         AnimatedVectorDrawable drawable = tick ? tickToCross : crossToTick;
-        ivTickCross.setImageDrawable(drawable);
+        mFloatingActionButton.setImageDrawable(drawable);
         drawable.start();
         tick = !tick;
     }
