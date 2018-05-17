@@ -30,17 +30,37 @@ public class VectorActivity extends AppCompatActivity {
 
     private FloatingActionButton mFloatingActionButton;
     private boolean tick=true,isMenu=true ;
-    ImageView ivMenu;
-    VectorMasterView hourglassView,search_backView;
+    ImageView ivMenu,ivCar;
+    VectorMasterView hourglassView,search_backView,lightningView,rainView;
     int searchBackState = 0;
     PathModel searchCircle, stem, arrowUp, arrowDown;
 
-    int state = 0;
-    float translationY = -24;
-    float rotation;
-    private float arrowHeadBottomTrimEnd,circleTrimEnd,stemTrimStart,stemTrimEnd;
-    private float arrowHeadTopTrimEnd;
+    float stemTrimStart = 0;
+    float stemTrimEnd = 0.185f;
 
+    float circleTrimEnd = 1;
+    float translationY = 0;
+    float rotation = 0;
+    int state = 0;
+    float arrowHeadTopTrimEnd = 0;
+    float arrowHeadBottomTrimEnd = 0;
+
+    int count = 60;
+
+
+    float trimStart = 0;
+    float trimEnd = 0;
+    int countLightning = 60;
+
+    float rainTrimStart_C = 0;
+    float rainTrimEnd_C = 0;
+    int rainCount_C = 60;
+    float rainTrimStart_L = 0;
+    float rainTrimEnd_L = 0;
+    int rainCount_L = 55;
+    float rainTrimStart_R = 0;
+    float rainTrimEnd_R = 0;
+    int rainCount_R = 50;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +110,9 @@ public class VectorActivity extends AppCompatActivity {
         mFloatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         hourglassView = findViewById(R.id.hourglassView);
         search_backView = findViewById(R.id.search_backView);
+        lightningView = (VectorMasterView) findViewById(R.id.lightningView);
+        rainView = (VectorMasterView) findViewById(R.id.rainView);
+        ivCar= findViewById(R.id.carImage);
 
     }
     @SuppressLint("NewApi")
@@ -240,5 +263,113 @@ public class VectorActivity extends AppCompatActivity {
                 } else {
                     animateBackToSearch();
                 }
+    }
+   public void animateRain(View view) {
+        final PathModel rainLeft = rainView.getPathModelByName("rain_left");
+        final PathModel rainCenter = rainView.getPathModelByName("rain_center");
+        final PathModel rainRight = rainView.getPathModelByName("rain_right");
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                rainCount_C++;
+                if (rainCount_C >= 60) {
+                    if (rainTrimEnd_C < 1) {
+                        rainTrimEnd_C += 0.04f;
+                    } else if (rainTrimEnd_C >= 1 && rainTrimStart_C < 1) {
+                        rainTrimStart_C += 0.04f;
+                    } else if (rainTrimEnd_C >= 1 && rainTrimStart_C >= 1) {
+                        rainTrimEnd_C = 0;
+                        rainTrimStart_C = 0;
+                        rainCount_C = 0;
+                    }
+                }
+                rainCount_L++;
+                if (rainCount_L >= 60) {
+                    if (rainTrimEnd_L < 1) {
+                        rainTrimEnd_L += 0.04f;
+                    } else if (rainTrimEnd_L >= 1 && rainTrimStart_L < 1) {
+                        rainTrimStart_L += 0.04f;
+                    } else if (rainTrimEnd_L >= 1 && rainTrimStart_L >= 1) {
+                        rainTrimEnd_L = 0;
+                        rainTrimStart_L = 0;
+                        rainCount_L = 0;
+                    }
+                }
+                rainCount_R++;
+                if (rainCount_R >= 60) {
+                    if (rainTrimEnd_R < 1) {
+                        rainTrimEnd_R += 0.04f;
+                    } else if (rainTrimEnd_R >= 1 && rainTrimStart_R < 1) {
+                        rainTrimStart_R += 0.04f;
+                    } else if (rainTrimEnd_R >= 1 && rainTrimStart_R >= 1) {
+                        rainTrimEnd_R = 0;
+                        rainTrimStart_R = 0;
+                        rainCount_R = 0;
+                    }
+                }
+
+                rainCenter.setTrimPathEnd(rainTrimEnd_C);
+                rainCenter.setTrimPathStart(rainTrimStart_C);
+
+                rainLeft.setTrimPathEnd(rainTrimEnd_L);
+                rainLeft.setTrimPathStart(rainTrimStart_L);
+
+                rainRight.setTrimPathEnd(rainTrimEnd_R);
+                rainRight.setTrimPathStart(rainTrimStart_R);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        rainView.update();
+                    }
+                });
+
+            }
+        }, 500, 1000 / 60);
+
+    }
+   public void animateLightning(View v) {
+        PathModel cloudModel = lightningView.getPathModelByName("cloud");
+        cloudModel.setStrokeColor(Color.parseColor("#5D5D5D"));
+        final PathModel lightningModel = lightningView.getPathModelByName("lightning");
+        lightningModel.setStrokeColor(Color.parseColor("#FFD700"));
+        lightningModel.setTrimPathEnd(0.0f);
+        lightningModel.setTrimPathStart(0.0f);
+
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                countLightning++;
+                if (countLightning >= 60) {
+                    if (trimEnd < 1) {
+                        trimEnd += 0.04f;
+                    } else if (trimEnd >= 1 && trimStart < 1) {
+                        trimStart += 0.04f;
+                    } else if (trimEnd >= 1 && trimStart >= 1) {
+                        trimEnd = 0;
+                        trimStart = 0;
+                        countLightning = 0;
+                    }
+                    lightningModel.setTrimPathEnd(trimEnd);
+                    lightningModel.setTrimPathStart(trimStart);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            lightningView.update();
+                        }
+                    });
+                }
+            }
+        }, 500, 1000 / 60);
+    }
+    @SuppressLint("NewApi")
+    public void animateCar(View view) {
+     AnimatedVectorDrawable carDrawable = (AnimatedVectorDrawable) getResources().getDrawable(R.drawable.avd_car_animator);
+
+        ivCar.setImageDrawable(carDrawable);
+        carDrawable.start();
     }
 }

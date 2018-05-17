@@ -1,0 +1,27 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="96dp"
+    android:height="96dp"
+    android:viewportWidth="96"
+    android:viewportHeight="96">
+
+  <path
+      android:name="bird"
+      android:pathData="M6,8c3,-1 6,-1.5 7,2c1,-3.5 4,-3 7,-2"
+      android:strokeLineJoin="round"
+      android:strokeWidth="2"
+      android:strokeColor="#20416b"
+      android:strokeMiterLimit="1.41421"
+      android:strokeLineCap="round" />
+  <group
+      android:name="translateY"
+      android:pivotX="50"
+      android:pivotY="50">
+  <path
+      android:pathData="M60.5,30.5h-35c-2.8,0 -5,2.2 -5,5V58h5c0,4.1 3.4,7.5 7.5,7.5s7.5,-3.4 7.5,-7.5h13.8c0,4.1 3.4,7.5 7.5,7.5s7.5,-3.4 7.5,-7.5h6.3V45.5L60.5,30.5zM25.5,45.5v-10h10v10H25.5zM33,61.8c-2.1,0 -3.8,-1.7 -3.8,-3.8s1.7,-3.8 3.8,-3.8s3.8,1.7 3.8,3.8S35.1,61.8 33,61.8zM50.5,45.5h-10v-10h10V45.5zM61.8,61.8c-2.1,0 -3.8,-1.7 -3.8,-3.8s1.7,-3.8 3.8,-3.8s3.8,1.7 3.8,3.8S63.8,61.8 61.8,61.8zM55.5,45.5v-10H58l10,10H55.5z"
+      android:fillColor="#333333"/>
+  </group>
+
+  <path
+      android:fillColor="#FF000000"
+      android:pathData="M70,70H5v-2h80v2 z"/>
+</vector>

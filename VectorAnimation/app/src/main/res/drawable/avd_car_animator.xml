@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/ic_airport_shuttle_01"
+    tools:ignore="NewApi">
+    <target
+        android:animation="@animator/birds_animation"
+        android:name="bird" />
+    <target
+        android:animation="@animator/cloud_animation"
+        android:name="cloud" />
+    <target
+        android:name="translateY"
+        android:animation="@animator/car_animation"/>
+</animated-vector>

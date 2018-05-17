@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.sdsmdg.harjot.vectormaster.VectorMasterView
         android:id="@+id/heart_vector"
         android:layout_width="80dp"
@@ -26,6 +37,34 @@
         android:layout_margin="5dp"
         android:onClick="animateSearch"
         app:vector_src="@drawable/vd_search_back" />
+    <com.sdsmdg.harjot.vectormaster.VectorMasterView
+        android:id="@+id/lightningView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="5dp"
+        android:onClick="animateLightning"
+        app:vector_src="@drawable/vd_cloud_lightening" />
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        android:layout_gravity="right"
+        android:layout_alignParentRight="true"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+        <com.sdsmdg.harjot.vectormaster.VectorMasterView
+            android:id="@+id/rainView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_margin="5dp"
+            android:onClick="animateRain"
+            app:vector_src="@drawable/vd_cloud_rain" />
+
+
     <ImageView
         android:layout_width="80dp"
         android:layout_height="80dp"
@@ -46,6 +85,17 @@
         app:fabSize="normal"
         android:onClick="animate"
         app:layout_anchorGravity="bottom|end"/>
+        <ImageView
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_margin="5dp"
+            android:id="@+id/carImage"
+            android:background="@color/theme_yellow_accent"
+            app:srcCompat="@drawable/ic_airport_shuttle_01"
+            android:onClick="animateCar"
+            />
+    </LinearLayout>
 
+</RelativeLayout>
 
-</LinearLayout>
+</ScrollView>
