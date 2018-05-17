@@ -2,17 +2,33 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <!--<com.sdsmdg.harjot.vectormaster.VectorMasterView-->
-        <!--android:id="@+id/heart_vector"-->
-        <!--android:layout_width="120dp"-->
-        <!--android:layout_height="120dp"-->
-        <!--android:layout_margin="5dp"-->
-        <!--app:vector_src="@drawable/ic_heart" />-->
+    <com.sdsmdg.harjot.vectormaster.VectorMasterView
+        android:id="@+id/heart_vector"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="5dp"
+        app:vector_src="@drawable/ic_heart" />
 
+    <com.sdsmdg.harjot.vectormaster.VectorMasterView
+        android:id="@+id/hourglassView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="5dp"
+        android:onClick="animateHourglass"
+        app:vector_src="@drawable/vd_hour_glass" />
+
+    <com.sdsmdg.harjot.vectormaster.VectorMasterView
+        android:id="@+id/search_backView"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_margin="5dp"
+        android:onClick="animateSearch"
+        app:vector_src="@drawable/vd_search_back" />
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_margin="5dp"
         android:id="@+id/menu"
         android:background="@color/theme_yellow_accent"
@@ -22,13 +38,14 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_margin="5dp"
         android:tint="@color/theme_green_accent"
         app:srcCompat="@drawable/ic_tick"
         app:fabSize="normal"
         android:onClick="animate"
         app:layout_anchorGravity="bottom|end"/>
+
 
 </LinearLayout>

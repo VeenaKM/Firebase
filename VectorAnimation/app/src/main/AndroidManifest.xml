@@ -32,6 +32,10 @@
         <activity android:name=".TransitionChooser.ShuffleActivity" />
         <activity android:name=".TransitionChooser.PathMotionActivity" />
         <activity android:name=".vector.VectorChooserActivity" />
+        <activity android:name=".vector.VectorMainActivity" />
+        <activity android:name=".vector.PathMorphActivity" />
+        <activity android:name=".vector.RotateActivity" />
+        <activity android:name=".vector.FillInHeartActivity" />
 
     </application>
 

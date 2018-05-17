@@ -19,11 +19,13 @@ public class VectorChooserActivity extends AppCompatActivity implements AdapterV
 
     private static final Class[] CLASSES = new Class[]{
             VectorActivity.class,
+            VectorMainActivity.class
 
     };
 
     private static final int[] DESCRIPTION_IDS = new int[] {
             R.string.path_motion,
+            R.string.vector_animation
     };
 
     @Override
