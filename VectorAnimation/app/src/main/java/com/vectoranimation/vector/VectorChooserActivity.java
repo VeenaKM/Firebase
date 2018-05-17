@@ -1,4 +1,4 @@
-package com.vectoranimation;
+package com.vectoranimation.vector;
 
 import android.content.Context;
 import android.content.Intent;
@@ -12,30 +12,18 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.vectoranimation.SharedElementTransition.ActivityA;
-import com.vectoranimation.SharedElementTransition.AnimationChooserActivity;
-import com.vectoranimation.TransitionChooser.TransitionChooser;
-import com.vectoranimation.bounceAnim.BounceActivity;
-import com.vectoranimation.vector.VectorChooserActivity;
+import com.vectoranimation.ChooserActivity;
+import com.vectoranimation.R;
 
-public class ChooserActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class VectorChooserActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private static final Class[] CLASSES = new Class[]{
-            VectorChooserActivity.class,
-            AnimationChooserActivity.class,
-            BounceActivity.class,
-            TransitionChooser.class,
-            AnimatedClockActivity.class,
-            NewActivity.class,
+            VectorActivity.class,
+
     };
 
     private static final int[] DESCRIPTION_IDS = new int[] {
-            R.string.vector_animation,
-            R.string.shared_element,
-            R.string.bounce_anim,
-            R.string.transition,
-            R.string.vector_animation,
-            R.string.transition_animation
+            R.string.path_motion,
     };
 
     @Override
@@ -46,7 +34,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
         // Set up ListView and Adapter
         ListView listView = findViewById(R.id.list_view);
 
-        MyArrayAdapter adapter = new MyArrayAdapter(this, android.R.layout.simple_list_item_2, CLASSES);
+        ChooserActivity.MyArrayAdapter adapter = new ChooserActivity.MyArrayAdapter(this, android.R.layout.simple_list_item_2, CLASSES);
         adapter.setDescriptionIds(DESCRIPTION_IDS);
 
         listView.setAdapter(adapter);

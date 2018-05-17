@@ -17,4 +17,6 @@
     <string name="transition">Transition Animation</string>
     <string name="shuffle_transition">Shuffle Transition</string>
     <string name="path_motion">Path Motion</string>
+    <string name="back_vector_path">M50 25,L80 50,M20 50,L80 50,M50 75,L80 50</string>
+    <string name="menu_path">M20 30,L80 30,M20 50,L80 50,M20 70,L80 70</string>
 </resources>
