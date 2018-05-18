@@ -21,6 +21,7 @@ import com.vectoranimation.vector.VectorChooserActivity;
 public class ChooserActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     private static final Class[] CLASSES = new Class[]{
+            ExplodeActivity.class,
             VectorChooserActivity.class,
             AnimationChooserActivity.class,
             BounceActivity.class,
@@ -30,6 +31,7 @@ public class ChooserActivity extends AppCompatActivity implements AdapterView.On
     };
 
     private static final int[] DESCRIPTION_IDS = new int[] {
+            R.string.explode,
             R.string.vector_animation,
             R.string.shared_element,
             R.string.bounce_anim,

@@ -7,6 +7,7 @@
     <target
         android:animation="@animator/birds_animation"
         android:name="bird" />
+
     <target
         android:animation="@animator/cloud_animation"
         android:name="cloud" />

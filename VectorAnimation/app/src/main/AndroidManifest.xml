@@ -36,6 +36,7 @@
         <activity android:name=".vector.PathMorphActivity" />
         <activity android:name=".vector.RotateActivity" />
         <activity android:name=".vector.FillInHeartActivity" />
+        <activity android:name=".ExplodeActivity" />
 
     </application>
 

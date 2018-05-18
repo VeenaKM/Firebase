@@ -5,6 +5,7 @@
     android:width="18dp"
     android:height="9dp">
 
+
     <path
         android:name="bird"
         android:pathData="M2,4c3,-1 6,-1.5 7,2c1,-3.5 4,-3 7,-2"
